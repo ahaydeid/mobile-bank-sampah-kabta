@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Lock, ArrowRight } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { api } from '@/lib/api';
@@ -33,25 +33,14 @@ export default function LoginPage() {
 
       const role = response.role; // 'nasabah' or 'petugas' or 'admin'
 
-      MySwal.fire({
-        title: <p className="text-violet-700">Login Berhasil!</p>,
-        text: `Selamat datang, ${response.user.name || 'User'}!`,
-        icon: 'success',
-        timer: 1500,
-        showConfirmButton: false,
-        customClass: {
-          popup: 'rounded-xl',
-        }
-      }).then(() => {
-        // Redirect based on role
-        if (role === 'nasabah') {
-          router.push('/dashboard');
-        } else if (role === 'petugas' || role === 'admin') {
-          router.push('/petugas/dashboard');
-        } else {
-          router.push('/dashboard'); // Default fallback
-        }
-      });
+      // Redirect based on role
+      if (role === 'nasabah') {
+        router.push('/dashboard');
+      } else if (role === 'petugas' || role === 'admin') {
+        router.push('/petugas/dashboard');
+      } else {
+        router.push('/dashboard'); // Default fallback
+      }
 
     } catch (error: any) {
       console.error("Login Error:", error);
@@ -74,14 +63,11 @@ export default function LoginPage() {
     <div className="min-h-screen grid bg-white p-6 place-items-center content-center">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <div className="mx-auto w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm transform -rotate-3">
-            <Lock className="w-8 h-8 text-violet-600" />
-          </div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             Selamat Datang!
           </h1>
           <p className="text-slate-500 mt-2 text-sm leading-relaxed">
-            Masuk untuk mulai mengelola sampah<br/>dan tukar poinmu.
+            Ayo masuk untuk memulai!
           </p>
         </div>
         
@@ -121,11 +107,9 @@ export default function LoginPage() {
               disabled={loading}
               className="rounded-full"
             >
-              {loading ? 'Memproses...' : (
-                <span className="flex items-center">
-                  Masuk Sekarang <ArrowRight className="ml-2 w-4 h-4" />
-                </span>
-              )}
+              <span className="flex items-center">
+                Masuk Sekarang
+              </span>
             </Button>
           </div>
         </form>
@@ -139,6 +123,16 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+      
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="flex flex-col items-center">
+                <Loader2 className="w-8 h-8 text-white animate-spin mb-2" />
+                <p className="text-xs font-bold text-white">Tunggu sebentar...</p>
+            </div>
+        </div>
+      )}
     </div>
   );
 }
