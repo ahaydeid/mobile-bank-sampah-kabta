@@ -176,6 +176,28 @@ export default function CartPage() {
         return;
     }
 
+    // Cek apakah ada transaksi penukaran yang masih belum selesai
+    try {
+        const historyRes = await api.getHistoryTukar(1);
+        const hasActive = historyRes?.data?.some((item: any) => 
+            !item.tanggal_selesai && ['menunggu', 'disetujui'].includes(item.status.toLowerCase())
+        );
+
+        if (hasActive) {
+            MySwal.fire({
+                title: 'Transaksi Aktif',
+                text: 'Anda masih memiliki penukaran yang belum selesai. Selesaikan atau batalkan dulu transaksi sebelumnya.',
+                icon: 'warning',
+                confirmButtonColor: '#7c3aed',
+                customClass: { popup: 'rounded-xl', confirmButton: 'rounded-full px-6' }
+            });
+            return;
+        }
+    } catch (e) {
+        // Jika gagal fetch history, biarkan backend yang validasi saat checkout
+        console.error("Failed to check active transactions", e);
+    }
+
     const result = await MySwal.fire({
         title: 'Konfirmasi Tukar',
         html: `<p class="text-sm text-slate-600">Total <b>${totalPoints.toLocaleString('id-ID')} poin</b> untuk <b>${selectedItemIds.size} item</b> akan dipotong dari saldo Anda untuk penukaran di <b>${selectedPos?.nama_pos || 'Unit Terpilih'}</b>.</p>`,
@@ -376,13 +398,21 @@ export default function CartPage() {
                 </span>
                 <span className="text-[10px] text-slate-400 font-medium tracking-widest whitespace-nowrap">Total Poin</span>
                 <span className="text-sm font-bold text-slate-400 flex items-center gap-1">
-                  : <span className="text-violet-700">{totalPoints.toLocaleString('id-ID')}</span>
+                  : <span className={cn(
+                    "transition-colors",
+                    userBalance < totalPoints ? "text-red-500 font-black" : "text-violet-700"
+                  )}>{totalPoints.toLocaleString('id-ID')}</span>
                 </span>
               </div>
               <Button 
-                className="rounded-full h-10 px-8 font-black text-sm tracking-wide shrink-0 bg-violet-600 hover:bg-violet-700 text-white"
+                className={cn(
+                  "rounded-full h-10 px-8 font-black text-sm tracking-wide shrink-0 transition-all",
+                  userBalance < totalPoints 
+                    ? "bg-slate-200 text-slate-400 cursor-not-allowed border-none shadow-none" 
+                    : "bg-violet-600 hover:bg-violet-700 text-white shadow-md active:scale-95"
+                )}
                 onClick={handleCheckout}
-                disabled={isSubmitting || cartItems.length === 0}
+                disabled={isSubmitting || cartItems.length === 0 || userBalance < totalPoints}
               >
                 {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Tukar"}
               </Button>

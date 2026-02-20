@@ -34,14 +34,14 @@ export default function QrPage() {
 
             <div className="flex flex-col items-center">
                 {/* Identity Card */}
-                <div className="w-full bg-white overflow-hidden mb-6 rounded-sm">
+                <div className="w-full bg-white overflow-hidden mb-6">
                     <div className="bg-violet-600 px-6 py-4 flex flex-col items-center text-white text-center">
-                        <p className="text-white text-[10px] font-medium uppercase tracking-[0.1em]">ID: {memberId}</p>
+                        <p className="text-white text-sm font-medium uppercase tracking-[0.1em]">ID: {memberId}</p>
                     </div>
 
                     <div className="p-8 flex flex-col items-center bg-white relative">
                         {/* QR Code Container */}
-                        <div className="p-3 w-full bg-white rounded-sm border border-slate-200 mb-6">
+                        <div className="p-3 w-full bg-white border border-slate-200 mb-6">
                             <div className="bg-white p-1">
                                 <QRCode 
                                     value={memberId} 
@@ -54,7 +54,7 @@ export default function QrPage() {
 
                         <button 
                             onClick={() => setIsInfoOpen(true)}
-                            className="w-full max-w-[150px] flex border border-slate-200 items-center justify-center gap-2 bg-slate-50 text-slate-700 text-[10px] py-1 rounded-full"
+                            className="w-full max-w-[150px] flex border border-slate-200 items-center justify-center gap-2 bg-slate-50 text-slate-700 text-xs py-2 cursor-pointer rounded-full"
                         >
                             <Info className="w-3.5 h-3.5" />
                             Cara Pakai
@@ -75,7 +75,7 @@ export default function QrPage() {
                         </div>
                         <div className="p-3">
                             <p className="text-xs text-slate-600 leading-relaxed mb-6">
-                                Tunjukkan QR Code ini kepada Petugas Bank Sampah saat Anda ingin melakukan setoran sampah.
+                                Tunjukkan QR Code ini kepada Petugas Bank Sampah setiap kali Anda melakukan transaksi setoran sampah.
                             </p>
                             <button 
                                 onClick={() => setIsInfoOpen(false)}

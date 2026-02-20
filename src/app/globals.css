@@ -33,3 +33,16 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+/* Force override browser autofill background */
+.no-autofill-bg:-webkit-autofill,
+.no-autofill-bg:-webkit-autofill:hover, 
+.no-autofill-bg:-webkit-autofill:focus, 
+.no-autofill-bg:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+    -webkit-text-fill-color: #0f172a !important;
+}
+
+.no-autofill-bg-focus:focus:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}

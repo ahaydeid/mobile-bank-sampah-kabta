@@ -4,6 +4,7 @@ import React from 'react';
 import useSWR from 'swr';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api';
+import Link from 'next/link';
 
 const tabs = [
   { key: 'setor', label: 'Setor Sampah' },
@@ -60,17 +61,21 @@ function SetorList() {
   return (
     <div className="divide-y divide-slate-100">
       {data.map((item: any) => (
-        <div key={item.id} className="px-4 py-3.5 flex items-center justify-between">
+        <Link 
+          key={item.id} 
+          href={`/setor/${item.id}`}
+          className="px-4 py-3.5 flex items-center justify-between active:bg-slate-50 transition-colors"
+        >
           <div className="min-w-0 flex-1">
-            <p className="text-sm text-slate-900">{item.pos?.nama_pos || 'Pos'}</p>
+            <p className="text-sm font-semibold text-slate-900">{item.pos?.nama_pos || 'Pos'}</p>
             <p className="text-xs text-slate-400 mt-0.5">
               {formatDate(item.tanggal_waktu)} · {Number(item.total_berat).toFixed(1)} kg
             </p>
           </div>
-          <span className="text-sm font-medium text-emerald-600 ml-3">
+          <span className="text-sm font-bold text-emerald-600 ml-3">
             +{Number(item.total_poin).toLocaleString('id-ID')}
           </span>
-        </div>
+        </Link>
       ))}
     </div>
   );
@@ -91,9 +96,13 @@ function TukarList() {
         const statusLabel = getStatusLabel(item.status);
 
         return (
-          <div key={item.id} className="px-4 py-3.5 flex items-center justify-between">
+          <Link 
+            key={item.id} 
+            href={`/redeem/${item.id}`}
+            className="px-4 py-3.5 flex items-center justify-between active:bg-slate-50 transition-colors"
+          >
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 truncate pr-2">
                 {item.kode_penukaran}
               </p>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -101,19 +110,19 @@ function TukarList() {
               </p>
             </div>
             <div className="flex items-center gap-2 ml-3">
-              <span className="text-sm font-semibold text-rose-600">
+              <span className="text-sm font-bold text-rose-500">
                 -{Number(item.total_poin).toLocaleString('id-ID')}
               </span>
               {statusLabel && (
                 <span className={cn(
-                  'text-[10px] text-white px-3 py-0.5 rounded-full',
+                  'text-[9px] font-bold text-white px-2 py-0.5 rounded-sm uppercase tracking-wider',
                   statusLabel.bg
                 )}>
                   {statusLabel.text}
                 </span>
               )}
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>
@@ -164,15 +173,18 @@ function formatDate(dateStr: string | null): string {
 }
 
 function getStatusLabel(status: string): { text: string; bg: string } | null {
-  switch (status) {
+  const s = status.toLowerCase();
+  switch (s) {
     case 'menunggu':
       return { text: 'Menunggu', bg: 'bg-amber-500' };
     case 'disetujui':
       return { text: 'Disetujui', bg: 'bg-sky-600' };
     case 'selesai':
-      return null;
+      return { text: 'Selesai', bg: 'bg-emerald-500' };
     case 'ditolak':
       return { text: 'Ditolak', bg: 'bg-red-600' };
+    case 'dibatalkan':
+      return { text: 'Dibatalkan', bg: 'bg-red-500' };
     case 'kadaluwarsa':
       return { text: 'Kadaluwarsa', bg: 'bg-slate-500' };
     default:

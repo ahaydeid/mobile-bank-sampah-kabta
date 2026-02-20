@@ -5,9 +5,8 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Wallet, History, Gift, Bell, Store, Info } from 'lucide-react';
+import { Wallet, Bell, Lightbulb, Headset, Calendar, Store } from 'lucide-react';
 import Cookies from 'js-cookie';
-
 import { api } from '@/lib/api';
 import { getUserName, getImageUrl, getGreeting, cn } from '@/lib/utils';
 
@@ -60,10 +59,10 @@ export default function NasabahDashboard() {
           <p className="text-sm text-slate-500">{greeting}</p>
         </div>
         <div className="flex gap-3">
-            <Button variant="ghost" size="icon" className="rounded-full bg-white text-slate-600 relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-            </Button>
+          <Link href="/notifications" className="inline-flex items-center justify-center rounded-full bg-white text-slate-600 relative w-10 h-10 hover:bg-slate-50 transition-colors">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+          </Link>
             {user?.profil?.foto_profil ? (
                 <img 
                   src={getImageUrl(user.profil.foto_profil) || ''} 
@@ -100,31 +99,59 @@ export default function NasabahDashboard() {
       </Card>
 
 
-      {/* Status Monitoring */}
-      <StatusTracker />
-
       {/* Services Grid */}
       <div>
         <Card padding="none" className="border-slate-200 rounded-sm bg-white overflow-hidden">
           <CardContent className="p-3">
-            <div className="grid grid-cols-4 gap-2">
-              <Link href="/pos" className="flex flex-col items-center gap-2 group">
-                <div className="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
+            <div className="grid grid-cols-4 gap-y-4 gap-x-2">
+              <Link href="/pos" className="flex flex-col items-center gap-1.5 group">
+                <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
                   <Store className="w-6 h-6" />
                 </div>
-                <span className="text-[11px] font-medium text-slate-700">Pos</span>
+                <span className="text-[11px] font-semibold text-slate-700">Lokasi Unit</span>
+              </Link>
+              
+              <Link href="#" className="flex flex-col items-center gap-1.5 group">
+                <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
+                  <Wallet className="w-6 h-6" />
+                </div>
+                <span className="text-[11px] font-semibold text-slate-700 text-center">Nilai Sampah</span>
+              </Link>
+
+              <Link href="#" className="flex flex-col items-center gap-1.5 group">
+                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <span className="text-[11px] font-semibold text-slate-700">Jadwal</span>
+              </Link>
+
+              <Link href="#" className="flex flex-col items-center gap-1.5 group">
+                <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
+                  <Lightbulb className="w-6 h-6" />
+                </div>
+                <span className="text-[11px] font-semibold text-slate-700">Edukasi</span>
+              </Link>
+
+              <Link href="#" className="flex flex-col items-center gap-1.5 group">
+                <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
+                  <Headset className="w-6 h-6" />
+                </div>
+                <span className="text-[11px] font-semibold text-slate-700">Bantuan</span>
               </Link>
             </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Status Monitoring */}
+      <StatusTracker />
+
       {/* Recent Transactions */}
       <div>
         <div className="flex justify-between items-center mb-1.5 px-1">
           <h3 className="font-bold text-slate-900 text-sm tracking-tight opacity-80">Aktivitas</h3>
           <Link href="/history">
-            <span className="text-[11px] text-violet-600">Lihat semua</span>
+            <span className="text-xs text-violet-600">Lihat semua</span>
           </Link>
         </div>
         
@@ -251,16 +278,10 @@ function StatusTracker() {
       labelStep3 = 'Disetujui';
     }
   } else if (status === 'ditolak' || status === 'dibatalkan') {
-    if (isFinished) {
-      activeIndex = 3;
-      labelStep3 = 'Ditolak';
-      labelStep4 = 'Selesai';
-      isFailed = true;
-    } else {
-      activeIndex = 2;
-      labelStep3 = 'Ditolak';
-      isFailed = true;
-    }
+    activeIndex = 3;
+    labelStep3 = status === 'ditolak' ? 'Ditolak' : 'Dibatalkan';
+    labelStep4 = 'Selesai';
+    isFailed = true;
   } else if (status === 'selesai') {
     activeIndex = 3;
     labelStep3 = 'Disetujui';
@@ -287,7 +308,7 @@ function StatusTracker() {
         <span className="text-[11px] text-slate-400">{latestTransaction.kode_penukaran}</span>
       </div>
       <Card padding="none" className="rounded-none bg-white overflow-hidden">
-        <CardContent className="px-6 py-4">
+        <CardContent className="px-6 pt-4 pb-0">
           <div className="relative">
             {/* Connecting Line Track - Start/End at center of dots (w-6 = 24px => center = 12px = left-3) */}
             <div className="absolute top-3 left-3 right-3 h-0.5 bg-slate-100 -z-0"></div>
@@ -328,7 +349,7 @@ function StatusTracker() {
                     </div>
                     <span
                       className={cn(
-                        'text-[10px] mt-2 font-medium text-center absolute top-6 w-20',
+                        'text-[10px] mt-2 font-medium text-center absolute top-7 w-20',
                         successStep
                           ? 'text-emerald-600 font-bold'
                           : failedStep
@@ -346,7 +367,12 @@ function StatusTracker() {
             </div>
           </div>
           {/* Spacer for absolute positioned labels */}
-          <div className="h-6"></div>
+          <div className="h-8"></div>
+          <div className="flex justify-center border-t border-slate-100 pt-2 pb-3">
+             <Link href={`/redeem/${latestTransaction.id}`} className="text-xs font-medium text-violet-600 hover:text-violet-700 transition-colors">
+                Selengkapnya
+             </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

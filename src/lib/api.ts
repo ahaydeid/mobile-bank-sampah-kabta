@@ -1,35 +1,72 @@
 import Cookies from 'js-cookie';
 
-// Ganti dengan URL backend yang sebenarnya nanti
-// Untuk development bisa set lewat .env.local atau hardcode sementara
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+const handleUnauthorized = () => {
+  Cookies.remove('token');
+  Cookies.remove('role');
+  Cookies.remove('user');
+  if (typeof window !== 'undefined') {
+    window.location.href = '/login';
+  }
+};
+
+const baseRequest = async (endpoint: string, options: RequestInit = {}) => {
+  const token = Cookies.get('token');
+  
+  const headers = {
+    'Accept': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : '',
+    ...options.headers,
+  } as Record<string, string>;
+
+  if (options.body && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  // Handle Session Expiry / Unauthorized
+  if (response.status === 401) {
+    handleUnauthorized();
+    const data = await response.json();
+    throw new Error(data.message || 'Sesi telah berakhir. Silakan login kembali.');
+  }
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || `Request failed with status ${response.status}`);
+  }
+
+  return data;
+};
+
 export const api = {
-  // Helper untuk Login
+  // Direct fetch for specialized methods
+  get: (endpoint: string) => baseRequest(endpoint, { method: 'GET' }),
+  post: (endpoint: string, body: any) => baseRequest(endpoint, { 
+    method: 'POST', 
+    body: JSON.stringify(body) 
+  }),
+  patch: (endpoint: string, body: any) => baseRequest(endpoint, { 
+    method: 'PATCH', 
+    body: JSON.stringify(body) 
+  }),
+  delete: (endpoint: string) => baseRequest(endpoint, { method: 'DELETE' }),
+
+  // Auth
   login: async (identifier: string, password: string) => {
-    try {
-      const response = await fetch(`${BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          login: identifier,
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login gagal');
-      }
-
-      return data;
-    } catch (error: any) {
-      throw error;
-    }
+    return baseRequest('/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        login: identifier,
+        password: password,
+      }),
+    });
   },
   
   getMe: async () => {
@@ -38,37 +75,6 @@ export const api = {
 
   logout: async () => {
     return api.post('/logout', {});
-  },
-
-  // Helper umum untuk request authenticated
-  get: async (endpoint: string) => {
-    const token = Cookies.get('token');
-    
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-      },
-    });
-    
-    return response.json();
-  },
-  
-  post: async (endpoint: string, body: any) => {
-    const token = Cookies.get('token');
-    
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-    
-    return response.json();
   },
 
   // Catalogue & Units
@@ -100,33 +106,15 @@ export const api = {
   },
 
   updateCartQuantity: async (rewardId: number | string, quantity: number, posId?: number | string) => {
-    const token = Cookies.get('token');
-    const response = await fetch(`${BASE_URL}/cart/${rewardId}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({ 
-        jumlah: quantity,
-        pos_id: posId 
-      }),
+    return api.patch(`/cart/${rewardId}`, { 
+      jumlah: quantity,
+      pos_id: posId 
     });
-    return response.json();
   },
 
   removeFromCart: async (rewardId: number | string, posId?: number | string) => {
-    const token = Cookies.get('token');
     const query = posId ? `?pos_id=${posId}` : '';
-    const response = await fetch(`${BASE_URL}/cart/${rewardId}${query}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-      },
-    });
-    return response.json();
+    return api.delete(`/cart/${rewardId}${query}`);
   },
 
   checkout: async (posId: number | string, items: { reward_id: number | string, jumlah: number }[]) => {
@@ -141,8 +129,16 @@ export const api = {
     return api.get(`/setoran/history?page=${page}`);
   },
 
+  getSetorDetail: async (id: number | string) => {
+    return api.get(`/setoran/${id}`);
+  },
+
   getHistoryTukar: async (page: number = 1) => {
     return api.get(`/tukar-poin/history?page=${page}`);
+  },
+
+  getTukarDetail: async (id: number | string) => {
+    return api.get(`/tukar-poin/${id}`);
   },
 
   getQr: async (id: number | string) => {

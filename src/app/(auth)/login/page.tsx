@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { api } from '@/lib/api';
@@ -14,9 +14,10 @@ const MySwal = withReactContent(Swal);
 
 export default function LoginPage() {
   const router = useRouter();  
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+   const [identifier, setIdentifier] = useState('');
+   const [password, setPassword] = useState('');
+   const [showPassword, setShowPassword] = useState(false);
+   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,26 +74,41 @@ export default function LoginPage() {
         
         <form onSubmit={handleLogin} className="space-y-5">
           <Input
-            label="Email / Username / NIK"
+            label="Username"
             placeholder="Contoh: 1234567890"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
-            className="pl-3 h-12 bg-slate-50 border-transparent focus:bg-white transition-all"
+            className="pl-3 h-12 !bg-[#f8fafc] focus:!bg-white border-0 border-b-0 focus:border-b-2 border-transparent rounded-none focus:ring-0 focus:border-b-violet-500 transition-all duration-200 no-autofill-bg no-autofill-bg-focus"
             required
+            autoFocus
           />
           
           <div className="space-y-1">
-            <Input
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-12 bg-slate-50 border-transparent focus:bg-white transition-all"
-              required
-            />
+            <div className="relative">
+              <Input
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-3 pr-10 h-12 !bg-[#f8fafc] focus:!bg-white border-0 border-b-0 focus:border-b-2 border-transparent rounded-none focus:ring-0 focus:border-b-violet-500 transition-all duration-200 no-autofill-bg no-autofill-bg-focus"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-[44px] text-slate-400 hover:text-violet-600 transition-colors"
+                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
             <div className="flex justify-end">
-              <a href="#" className="text-xs font-medium text-violet-600 hover:text-violet-500">
+              <a href="#" className="text-xs text-violet-600 hover:text-violet-500">
                 Lupa Password?
               </a>
             </div>
@@ -103,7 +119,7 @@ export default function LoginPage() {
               type="submit" 
               fullWidth 
               variant="primary" 
-              size="lg"
+              size="md"
               disabled={loading}
               className="rounded-full"
             >
@@ -117,7 +133,7 @@ export default function LoginPage() {
         <div className="mt-8 text-center">
           <p className="text-sm text-slate-500">
             Belum punya akun?{' '}
-            <a href="#" className="font-bold text-violet-600 hover:text-violet-500">
+            <a href="#" className="text-violet-600 hover:text-violet-500">
               Daftar Sekarang
             </a>
           </p>

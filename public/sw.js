@@ -36,6 +36,9 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
+  // Skip non-http/https schemes (e.g., chrome-extension://)
+  if (!(request.url.startsWith('http:') || request.url.startsWith('https:'))) return;
+
   // Skip API requests — always go to network
   if (request.url.includes('/api/')) return;
 

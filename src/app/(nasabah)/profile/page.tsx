@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { User, Mail, Phone, LogOut, ShieldCheck, CreditCard } from 'lucide-react';
+import { User, Mail, Phone, LogOut, MapPin } from 'lucide-react';
 import { api } from '@/lib/api';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
@@ -110,7 +110,7 @@ export default function ProfilePage() {
 
          <div className="mt-3 text-center z-10 px-4">
              <h2 className="text-xl font-bold text-slate-900">{getUserName(user)}</h2>
-             <span className="text-xs font-medium bg-emerald-500 text-white px-3 py-0.5 rounded-full border border-emerald-200">
+             <span className="text-xs font-medium bg-emerald-500 text-white px-3 py-0.5 rounded-full border border-emerald-500">
                {user?.peran || 'Nasabah Aktif'}
              </span>
          </div>
@@ -151,7 +151,7 @@ export default function ProfilePage() {
             
            <div className="flex items-center gap-4 py-3">
                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500">
-                   <CreditCard className="w-5 h-5" />
+                   <MapPin className="w-5 h-5" />
                </div>
                <div className="flex-1 overflow-hidden">
                    <p className="text-xs text-slate-400 font-medium uppercase">Alamat</p>
@@ -164,7 +164,7 @@ export default function ProfilePage() {
       {/* Logout */}
       <Button 
         onClick={handleLogout}
-        className="flex bg-transparent font-light text-red-500 items-center justify-center max-w-[200px] gap-2 mx-auto"
+        className="flex bg-transparent hover:bg-slate-100 cursor-pointer font-light text-red-500 items-center justify-center max-w-[200px] gap-2 mx-auto"
       >
           <LogOut className="w-4 h-4" />
           Keluar Aplikasi
