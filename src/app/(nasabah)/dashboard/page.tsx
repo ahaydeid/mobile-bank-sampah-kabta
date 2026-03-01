@@ -5,7 +5,7 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Wallet, Bell, Lightbulb, Headset, Calendar, Store } from 'lucide-react';
+import { Wallet, Bell, PackageX, Lightbulb, Headset, Calendar, Store } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { api } from '@/lib/api';
 import { getUserName, getImageUrl, getGreeting, cn } from '@/lib/utils';
@@ -35,7 +35,7 @@ export default function NasabahDashboard() {
         if (data && data.user) {
           setUser(data.user);
           // Update cookie with fresh data
-          Cookies.set('user', JSON.stringify(data.user), { expires: 7 });
+          Cookies.set('user', JSON.stringify(data.user), { expires: 7, path: '/' });
         }
       } catch (e: any) {
         console.error("Failed to fetch fresh user data", e);
@@ -113,7 +113,7 @@ export default function NasabahDashboard() {
               
               <Link href="#" className="flex flex-col items-center gap-1.5 group">
                 <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
-                  <Wallet className="w-6 h-6" />
+                  <PackageX className="w-6 h-6" />
                 </div>
                 <span className="text-[11px] font-semibold text-slate-700 text-center">Nilai Sampah</span>
               </Link>
@@ -278,8 +278,8 @@ function StatusTracker() {
       labelStep3 = 'Disetujui';
     }
   } else if (status === 'ditolak' || status === 'dibatalkan') {
-    activeIndex = 3;
-    labelStep3 = status === 'ditolak' ? 'Ditolak' : 'Dibatalkan';
+    activeIndex = isFinished ? 3 : 2;
+    labelStep3 = 'Ditolak';
     labelStep4 = 'Selesai';
     isFailed = true;
   } else if (status === 'selesai') {
@@ -301,78 +301,87 @@ function StatusTracker() {
     { label: labelStep4 },
   ];
 
+  // Determine if we should show the empty state instead of the tracker
+  // We hide the tracker ONLY if the latest transaction is finalized as Selesai or Kadaluwarsa
+  const isFinalized = ['selesai', 'kadaluwarsa'].includes(status) || isFinished;
+
   return (
     <div>
       <div className="flex justify-between items-center mb-1.5 px-1">
         <h3 className="font-bold text-slate-900 text-sm tracking-tight opacity-80">Status Penukaran</h3>
-        <span className="text-[11px] text-slate-400">{latestTransaction.kode_penukaran}</span>
+        {!isFinalized && <span className="text-[11px] text-slate-400">{latestTransaction.kode_penukaran}</span>}
       </div>
       <Card padding="none" className="rounded-none bg-white overflow-hidden">
-        <CardContent className="px-6 pt-4 pb-0">
-          <div className="relative">
-            {/* Connecting Line Track - Start/End at center of dots (w-6 = 24px => center = 12px = left-3) */}
-            <div className="absolute top-3 left-3 right-3 h-0.5 bg-slate-100 -z-0"></div>
-            
-            {/* Active Line Progress */}
-            <div 
-                className={cn(
-                  "absolute top-3 left-3 h-0.5 transition-all duration-500 -z-0",
-                  isSuccess && activeIndex === 3 ? "bg-emerald-500" : "bg-violet-600"
-                )}
-                style={{ width: `calc((100% - 24px) * ${activeIndex / (steps.length - 1)})` }}
-            ></div>
-
-            <div className="flex justify-between relative z-10">
-              {steps.map((step, i) => {
-                const isActive = i <= activeIndex;
-                const isCurrent = i === activeIndex;
-                // If isFailed is true, highlight both current and relevant rejection steps (Point 3 onwards) in red
-                const failedStep = isFailed && isActive && i >= 2;
-                // Success step is green only if it's the 4th step and is successful
-                const successStep = isSuccess && i === 3;
-
-                return (
-                  <div key={i} className="flex flex-col items-center w-6">
-                    <div
-                      className={cn(
-                        'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all shadow-sm border-2 ring-2 ring-white',
-                        successStep
-                          ? 'bg-emerald-500 border-emerald-500 text-white'
-                          : failedStep
-                            ? 'bg-red-500 border-red-500 text-white'
-                            : isActive
-                              ? 'bg-violet-600 border-violet-600 text-white'
-                              : 'bg-slate-100 border-slate-100 text-slate-300'
-                      )}
-                    >
-                      {i + 1}
-                    </div>
-                    <span
-                      className={cn(
-                        'text-[10px] mt-2 font-medium text-center absolute top-7 w-20',
-                        successStep
-                          ? 'text-emerald-600 font-bold'
-                          : failedStep
-                            ? 'text-red-500 font-bold'
-                            : isActive
-                              ? 'text-violet-600'
-                              : 'text-slate-300 opacity-0'
-                      )}
-                    >
-                      {step.label || '-'}
-                    </span>
-                  </div>
-                );
-              })}
+        <CardContent className={cn("px-6", isFinalized ? "py-3" : "pt-4 pb-0")}>
+          {isFinalized ? (
+            <div className="flex flex-col items-center justify-center text-center">
+               <p className="text-xs text-slate-500 italic">Belum ada pengajuan penukaran</p>
             </div>
-          </div>
-          {/* Spacer for absolute positioned labels */}
-          <div className="h-8"></div>
-          <div className="flex justify-center border-t border-slate-100 pt-2 pb-3">
-             <Link href={`/redeem/${latestTransaction.id}`} className="text-xs font-medium text-violet-600 hover:text-violet-700 transition-colors">
-                Selengkapnya
-             </Link>
-          </div>
+          ) : (
+            <>
+              <div className="relative">
+                {/* Connecting Line Track */}
+                <div className="absolute top-3 left-3 right-3 h-0.5 bg-slate-100 -z-0"></div>
+                
+                {/* Active Line Progress */}
+                <div 
+                    className={cn(
+                      "absolute top-3 left-3 h-0.5 transition-all duration-500 -z-0",
+                      isSuccess ? "bg-emerald-500" : isFailed ? "bg-red-500" : "bg-violet-600"
+                    )}
+                    style={{ width: `calc((100% - 24px) * ${activeIndex / (steps.length - 1)})` }}
+                ></div>
+
+                <div className="flex justify-between relative z-10">
+                  {steps.map((step, i) => {
+                    const isActive = i <= activeIndex;
+                    const failedStep = isFailed && isActive && i >= 2;
+                    const successStep = isSuccess && i === 3;
+
+                    return (
+                      <div key={i} className="flex flex-col items-center w-6">
+                        <div
+                          className={cn(
+                            'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all shadow-sm border-2 ring-2 ring-white',
+                            successStep
+                              ? 'bg-emerald-500 border-emerald-500 text-white'
+                              : failedStep
+                                ? 'bg-red-500 border-red-500 text-white'
+                                : isActive
+                                  ? 'bg-violet-600 border-violet-600 text-white'
+                                  : 'bg-slate-100 border-slate-100 text-slate-300'
+                          )}
+                        >
+                          {i + 1}
+                        </div>
+                        <span
+                          className={cn(
+                            'text-[10px] mt-2 font-medium text-center absolute top-7 w-20',
+                            successStep
+                              ? 'text-emerald-600 font-bold'
+                              : failedStep
+                                ? 'text-red-500 font-bold'
+                                : isActive
+                                  ? 'text-violet-600'
+                                  : 'text-slate-300 opacity-0'
+                          )}
+                        >
+                          {step.label || '-'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Spacer for absolute positioned labels */}
+              <div className="h-8"></div>
+              <div className="flex justify-center border-t border-slate-100 pt-2 pb-3">
+                 <Link href={`/redeem/${latestTransaction.id}`} className="text-xs font-medium text-violet-600 hover:text-violet-700 transition-colors">
+                    Selengkapnya
+                 </Link>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

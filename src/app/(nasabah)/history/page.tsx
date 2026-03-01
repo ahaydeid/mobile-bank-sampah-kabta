@@ -94,6 +94,7 @@ function TukarList() {
     <div className="divide-y divide-slate-100">
       {data.map((item: any) => {
         const statusLabel = getStatusLabel(item.status);
+        const isFinished = !!item.tanggal_selesai;
 
         return (
           <Link 
@@ -109,18 +110,28 @@ function TukarList() {
                 {formatDate(item.tanggal)} · {item.detail?.length || 0} item
               </p>
             </div>
-            <div className="flex items-center gap-2 ml-3">
-              <span className="text-sm font-bold text-rose-500">
+            <div className="flex flex-col items-end gap-1.5 ml-3">
+              <div className="flex items-center gap-1.5 mt-0.5">
+                {isFinished && statusLabel?.text !== 'Selesai' && (
+                  <span className={cn(
+                    "text-[10px] leading-none mt-0.5",
+                    ['ditolak', 'dibatalkan'].includes((item.status || '').toLowerCase()) ? "text-red-500" : "text-emerald-500"
+                  )}>
+                    Selesai
+                  </span>
+                )}
+                {statusLabel && (
+                  <span className={cn(
+                    'text-[9px] font-bold text-white px-2 py-0.5 rounded-sm uppercase tracking-wider',
+                    statusLabel.bg
+                  )}>
+                    {statusLabel.text}
+                  </span>
+                )}
+              </div>
+              <span className="text-sm font-bold text-rose-500 leading-none">
                 -{Number(item.total_poin).toLocaleString('id-ID')}
               </span>
-              {statusLabel && (
-                <span className={cn(
-                  'text-[9px] font-bold text-white px-2 py-0.5 rounded-sm uppercase tracking-wider',
-                  statusLabel.bg
-                )}>
-                  {statusLabel.text}
-                </span>
-              )}
             </div>
           </Link>
         );
@@ -182,9 +193,8 @@ function getStatusLabel(status: string): { text: string; bg: string } | null {
     case 'selesai':
       return { text: 'Selesai', bg: 'bg-emerald-500' };
     case 'ditolak':
-      return { text: 'Ditolak', bg: 'bg-red-600' };
     case 'dibatalkan':
-      return { text: 'Dibatalkan', bg: 'bg-red-500' };
+      return { text: 'Ditolak', bg: 'bg-red-500' };
     case 'kadaluwarsa':
       return { text: 'Kadaluwarsa', bg: 'bg-slate-500' };
     default:

@@ -11,8 +11,12 @@ import {
   MapPin, 
   Hash, 
   Clock, 
-  AlertCircle 
+  AlertCircle,
+  QrCode,
+  Timer,
+  AlertTriangle
 } from 'lucide-react';
+import QRCode from 'react-qr-code';
 import { api } from '@/lib/api';
 import { cn, getImageUrl } from '@/lib/utils';
 import useSWR from 'swr';
@@ -57,7 +61,7 @@ export default function DetailRedeemPage() {
 
       <div className="p-4 space-y-4">
         {/* Status Tracker */}
-        <div className="bg-white rounded-sm shadow-xs border border-slate-100 p-6">
+        <div className="bg-white rounded-sm border border-slate-100 p-6">
            <div className="flex justify-between items-center mb-6">
              <h3 className="font-bold text-slate-900 text-sm">Status Alur Penukaran</h3>
              <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded uppercase font-bold tracking-wider">
@@ -68,12 +72,17 @@ export default function DetailRedeemPage() {
            <div className="h-6"></div>
         </div>
 
+        {/* Dynamic QR Code Section (only for approved transactions) */}
+        {transaction.status === 'disetujui' && !transaction.tanggal_selesai && (
+          <QrCodeSection transactionId={id} kodePenukaran={transaction.kode_penukaran} />
+        )}
+
         {/* Info Utama */}
-        <Card className="border-none shadow-xs overflow-hidden">
+        <Card className="border-none overflow-hidden">
           <CardContent className="p-0">
             <div className="bg-violet-600 p-4 text-white">
                <p className="text-[10px] uppercase font-bold tracking-wider opacity-80">Kode Penukaran</p>
-               <h2 className="text-xl font-mono font-bold">{transaction.kode_penukaran}</h2>
+               <h2 className="text-xl font-bold">{transaction.kode_penukaran}</h2>
             </div>
             <div className="p-4 space-y-4">
                <div className="grid grid-cols-2 gap-4">
@@ -213,8 +222,8 @@ function StatusTracker({ transaction }: { transaction: any }) {
       activeIndex = 2;
     }
   } else if (['ditolak', 'dibatalkan'].includes(status)) {
-    activeIndex = 3;
-    label3 = status === 'ditolak' ? 'Ditolak' : 'Dibatalkan';
+    activeIndex = isFinished ? 3 : 2;
+    label3 = 'Ditolak';
     isFailed = true;
   } else if (status === 'selesai') {
     activeIndex = 3;
@@ -241,7 +250,7 @@ function StatusTracker({ transaction }: { transaction: any }) {
       <div 
         className={cn(
           "absolute top-3 left-3 h-0.5 transition-all duration-500 -z-0",
-          isSuccess ? "bg-emerald-500" : "bg-violet-600"
+          isSuccess ? "bg-emerald-500" : isFailed ? "bg-red-500" : "bg-violet-600"
         )}
         style={{ width: `calc((100% - 24px) * ${activeIndex / (steps.length - 1)})` }}
       ></div>
@@ -294,13 +303,151 @@ function StatusTracker({ transaction }: { transaction: any }) {
            </div>
         </div>
       )}
-      {isFailed && activeIndex === 3 && (
+      {isFailed && (
         <div className="mt-6 pt-3 border-t border-slate-50 flex items-center justify-center">
            <div className="flex w-full items-center gap-2 bg-red-500 text-white px-4 py-5">
-             <span className="text-sm w-full text-center uppercase tracking-widest">Penukaran Gagal</span>
+             <span className="text-sm w-full text-center uppercase tracking-widest">
+               {status === 'kadaluwarsa' ? 'Penukaran Gagal' : 'Penukaran Ditolak'}
+             </span>
            </div>
         </div>
       )}
     </div>
+  );
+}
+
+function QrCodeSection({ transactionId, kodePenukaran }: { transactionId: string, kodePenukaran: string }) {
+  const [showModal, setShowModal] = React.useState(false);
+  const { data: qrRes, error: qrError, isLoading: isLoadingQr } = useSWR(
+    `qr-${transactionId}`,
+    () => api.getQr(transactionId),
+    { refreshInterval: 30000 }
+  );
+
+  const [remainingSeconds, setRemainingSeconds] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (qrRes?.remaining_seconds !== undefined) {
+      setRemainingSeconds(Math.floor(qrRes.remaining_seconds));
+    }
+  }, [qrRes]);
+
+  React.useEffect(() => {
+    if (remainingSeconds === null || remainingSeconds <= 0) return;
+    const interval = setInterval(() => {
+      setRemainingSeconds(prev => {
+        if (prev === null || prev <= 0) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [remainingSeconds]);
+
+  const isExpired = qrRes?.is_expired || (remainingSeconds !== null && remainingSeconds <= 0);
+
+  const formatTime = (seconds: number) => {
+    const total = Math.floor(seconds);
+    const hrs = Math.floor(total / 3600);
+    const mins = Math.floor((total % 3600) / 60);
+    const secs = total % 60;
+    if (hrs > 0) {
+      return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <>
+      {/* Trigger Button Card */}
+      <div className="bg-white rounded-sm shadow-xs p-5 text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <QrCode className="w-5 h-5 text-violet-600" />
+          <h3 className="font-bold text-violet-600 text-sm">QR Code Penukaran</h3>
+        </div>
+        
+        {isLoadingQr ? (
+           <p className="text-slate-500 text-xs mb-4">Memuat QR Code...</p>
+        ) : qrError ? (
+           <p className="text-red-500 text-xs mb-4">Gagal memuat QR Code</p>
+        ) : isExpired ? (
+           <div className="py-2 flex flex-col items-center gap-1 text-center mb-4">
+             <AlertTriangle className="w-6 h-6 text-red-500" />
+             <p className="text-sm font-bold text-red-600">Kadaluwarsa</p>
+             <p className="text-xs text-slate-500">Waktu pengambilan habis</p>
+           </div>
+        ) : (
+          <>
+            <p className="text-slate-500 text-xs mb-4">
+              Tunjukkan QR Code ini kepada petugas untuk mengambil barang Anda.
+            </p>
+            {remainingSeconds !== null && remainingSeconds > 0 && (
+              <div className={cn(
+                "w-full flex items-center justify-center gap-2 py-3 mb-4 rounded-sm",
+                remainingSeconds <= 300 ? "bg-red-50 border border-red-100" : "bg-amber-50 border border-amber-100"
+              )}>
+                <Timer className={cn("w-4 h-4", remainingSeconds <= 300 ? "text-red-500" : "text-amber-600")} />
+                <span className={cn("text-sm font-bold", remainingSeconds <= 300 ? "text-red-600" : "text-amber-700")}>
+                  {formatTime(remainingSeconds)}
+                </span>
+                <span className={cn("text-xs font-medium tracking-wider", remainingSeconds <= 300 ? "text-red-400" : "text-amber-500")}>
+                  tersisa
+                </span>
+              </div>
+            )}
+          </>
+        )}
+
+        <button
+          onClick={() => setShowModal(true)}
+          disabled={isExpired || isLoadingQr || !!qrError}
+          className="w-full py-3 bg-violet-600 text-white font-bold text-sm rounded-sm hover:bg-violet-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isExpired ? 'QR Code Kadaluwarsa' : 'Tampilkan QR Code'}
+        </button>
+      </div>
+
+      {/* QR Code Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50">
+          <div 
+            className="bg-violet-600 rounded-sm w-full max-w-sm flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxHeight: '90vh' }}
+          >
+            {/* Modal Header */}
+            <div className="p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <QrCode className="w-4 h-4 text-white" />
+                <h3 className="font-bold text-white text-sm">QR Code Penukaran</h3>
+              </div>
+              <p className="text-violet-200 text-[11px]">Tunjukkan ke petugas untuk pengambilan barang</p>
+            </div>
+
+            <div className="bg-white flex-1 flex flex-col min-h-0">
+              {/* Modal Body */}
+              <div className="p-8 flex-1 flex flex-col items-center justify-center min-h-0">
+                 <div className="p-2 sm:p-4 bg-white border-2 border-slate-100 mb-2 w-full flex items-center justify-center" style={{ aspectRatio: '1/1' }}>
+                    <QRCode
+                      value={qrRes?.qr_data || kodePenukaran}
+                      size={256}
+                      style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                      viewBox={`0 0 256 256`}
+                    />
+                 </div>
+                 <p className="text-base sm:text-lg font-bold text-slate-500 tracking-widest">{kodePenukaran}</p>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 pb-6 mt-auto">
+                <button onClick={() => setShowModal(false)} className="w-full py-3 bg-slate-100 text-slate-700 font-bold text-sm rounded-sm hover:bg-slate-200 transition-colors">
+                  Tutup
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="absolute inset-0 -z-10" onClick={() => setShowModal(false)}></div>
+        </div>
+      )}
+    </>
   );
 }

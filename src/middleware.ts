@@ -17,7 +17,7 @@ const publicRoutes = ['/login', '/onboarding'];
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
-  const role = request.cookies.get('role')?.value;
+  const role = request.cookies.get('role')?.value?.toLowerCase().trim();
   const { pathname } = request.nextUrl;
 
   // 1. Redirect unauthenticated users from protected routes
@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
   if (isPublicRoute && token) {
-    if (role === 'nasabah') {
+    if (role === 'member' || role === 'nasabah') {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     } else if (role === 'petugas' || role === 'admin') {
       return NextResponse.redirect(new URL('/petugas/dashboard', request.url));
@@ -45,14 +45,15 @@ export function middleware(request: NextRequest) {
   }
 
   // 3. Role-based protection
-  // Prevent Nasabah from accessing /petugas paths
-  if (pathname.startsWith('/petugas') && role === 'nasabah') {
+  // Prevent Nasabah/Member from accessing /petugas paths
+  const isNasabah = role === 'member' || role === 'nasabah';
+  const isStaff = role === 'petugas' || role === 'admin';
+
+  if (pathname.startsWith('/petugas') && isNasabah) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
   
-  // Prevent Petugas from accessing Nasabah specific paths if any (for now Nasabah paths are mostly common)
-  // But usually /dashboard is for Nasabah.
-  if (pathname.startsWith('/dashboard') && (role === 'petugas' || role === 'admin')) {
+  if (pathname.startsWith('/dashboard') && isStaff) {
      return NextResponse.redirect(new URL('/petugas/dashboard', request.url));
   }
 

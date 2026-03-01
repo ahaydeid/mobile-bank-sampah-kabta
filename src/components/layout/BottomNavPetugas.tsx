@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Scan, Trash2, User } from 'lucide-react';
+import { Home, Scan, Bell, User, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function BottomNavPetugas() {
@@ -16,15 +16,20 @@ export function BottomNavPetugas() {
       icon: Home,
     },
     {
-      label: 'Setor',
-      href: '/petugas/setor',
-      icon: Trash2,
+      label: 'Riwayat',
+      href: '/petugas/history',
+      icon: History,
     },
     {
       label: 'Scan QR',
       href: '/petugas/scan',
       icon: Scan,
       isPrimary: true, // Special styling for main action
+    },
+    {
+      label: 'Notifikasi',
+      href: '/petugas/notifikasi',
+      icon: Bell,
     },
     {
       label: 'Akun',
@@ -47,7 +52,7 @@ export function BottomNavPetugas() {
                    <Link
                     href={item.href}
                     className={cn(
-                      "flex flex-col items-center justify-center w-14 h-14 rounded-full bg-violet-600 text-white shadow-lg shadow-violet-200 transition-transform active:scale-95",
+                      "flex flex-col items-center justify-center w-14 h-14 rounded-full bg-violet-600 text-white shadow-md shadow-violet-200 transition-transform active:scale-95",
                     )}
                   >
                     <Icon strokeWidth={2.5} className="w-6 h-6" />

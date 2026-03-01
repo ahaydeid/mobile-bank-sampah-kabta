@@ -409,7 +409,7 @@ export default function CartPage() {
                   "rounded-full h-10 px-8 font-black text-sm tracking-wide shrink-0 transition-all",
                   userBalance < totalPoints 
                     ? "bg-slate-200 text-slate-400 cursor-not-allowed border-none shadow-none" 
-                    : "bg-violet-600 hover:bg-violet-700 text-white shadow-md active:scale-95"
+                    : "bg-violet-600 hover:bg-violet-700 text-white active:scale-95"
                 )}
                 onClick={handleCheckout}
                 disabled={isSubmitting || cartItems.length === 0 || userBalance < totalPoints}

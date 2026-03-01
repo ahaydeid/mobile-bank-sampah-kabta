@@ -22,7 +22,7 @@ export function getUserName(user: any): string {
     return user.email.split('@')[0];
   }
 
-  return 'Nasabah';
+  return 'Pengguna';
 }
 
 export function getImageUrl(path: string | null | undefined): string | null {

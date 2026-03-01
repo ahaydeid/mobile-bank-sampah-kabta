@@ -30,7 +30,7 @@ const baseRequest = async (endpoint: string, options: RequestInit = {}) => {
   });
 
   // Handle Session Expiry / Unauthorized
-  if (response.status === 401) {
+  if (response.status === 401 && endpoint !== '/login') {
     handleUnauthorized();
     const data = await response.json();
     throw new Error(data.message || 'Sesi telah berakhir. Silakan login kembali.');
@@ -143,5 +143,14 @@ export const api = {
 
   getQr: async (id: number | string) => {
     return api.get(`/tukar-poin/${id}/qr`);
+  },
+
+  // Petugas Dashboard
+  getPetugasStats: async () => {
+    return api.get('/petugas/stats');
+  },
+
+  getPetugasQueue: async () => {
+    return api.get('/petugas/queue');
   },
 };

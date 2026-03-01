@@ -18,24 +18,28 @@ export default function LoginPage() {
    const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(false);
    const [loading, setLoading] = useState(false);
+   const [error, setError] = useState('');
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+
 
     try {
       // Real API Call
       const response = await api.login(identifier, password);
       
       // Save Token & Role
-      Cookies.set('token', response.token, { expires: 7 }); // 7 days
-      Cookies.set('role', response.role, { expires: 7 });
-      Cookies.set('user', JSON.stringify(response.user), { expires: 7 });
+      Cookies.set('token', response.token, { expires: 7, path: '/' });
+      Cookies.set('role', response.role, { expires: 7, path: '/' });
+      Cookies.set('user', JSON.stringify(response.user), { expires: 7, path: '/' });
 
-      const role = response.role; // 'nasabah' or 'petugas' or 'admin'
-
+      const role = response.role?.toLowerCase().trim(); 
+      
       // Redirect based on role
-      if (role === 'nasabah') {
+      if (role === 'member' || role === 'nasabah') {
         router.push('/dashboard');
       } else if (role === 'petugas' || role === 'admin') {
         router.push('/petugas/dashboard');
@@ -45,17 +49,9 @@ export default function LoginPage() {
 
     } catch (error: any) {
       console.error("Login Error:", error);
-      MySwal.fire({
-        title: 'Login Gagal',
-        text: error.message || 'Cek kembali email/password Anda.',
-        icon: 'error',
-        confirmButtonColor: '#7c3aed',
-        customClass: {
-            popup: 'rounded-xl',
-            confirmButton: 'rounded-full px-6'
-        }
-      });
+      setError('Username atau kata sandi salah');
     } finally {
+
       setLoading(false);
     }
   };
@@ -107,7 +103,15 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
+            
+            {error && (
+              <p className="text-xs bg-red-50 text-red-500 mt-5 p-3. text-center animate-in fade-in slide-in-from-top-1">
+                {error}
+              </p>
+            )}
+
             <div className="flex justify-end">
+
               <a href="#" className="text-xs text-violet-600 hover:text-violet-500">
                 Lupa Password?
               </a>
@@ -121,7 +125,7 @@ export default function LoginPage() {
               variant="primary" 
               size="md"
               disabled={loading}
-              className="rounded-full"
+              className="rounded-full cursor-pointer"
             >
               <span className="flex items-center">
                 Masuk Sekarang

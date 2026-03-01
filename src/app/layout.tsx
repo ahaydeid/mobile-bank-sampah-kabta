@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import { SWRCacheProvider } from "@/components/SWRCacheProvider";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -35,15 +36,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body
-        className={`${poppins.variable} antialiased`}
+        className={`${poppins.variable} font-sans antialiased`}
         suppressHydrationWarning={true}
       >
-        {children}
+        <SWRCacheProvider>
+          {children}
+        </SWRCacheProvider>
         <ServiceWorkerRegistration />
       </body>
     </html>
