@@ -84,7 +84,7 @@ export default function DetailRedeemPage() {
                <p className="text-[10px] uppercase font-bold tracking-wider opacity-80">Kode Penukaran</p>
                <h2 className="text-xl font-bold">{transaction.kode_penukaran}</h2>
             </div>
-            <div className="p-4 space-y-4">
+            <div className="py-4 space-y-4">
                <div className="grid grid-cols-2 gap-4">
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
@@ -154,7 +154,7 @@ export default function DetailRedeemPage() {
            <Card className="border-none shadow-xs">
              <CardContent className="p-0 divide-y divide-slate-50">
                {(transaction.detail || []).map((item: any, i: number) => (
-                 <div key={i} className="p-4 flex gap-4">
+                 <div key={i} className="py-4 flex gap-4">
                     <div className="w-14 h-14 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 border border-slate-100">
                        {item.reward?.foto_url || item.reward?.foto ? (
                           <img 
@@ -179,7 +179,7 @@ export default function DetailRedeemPage() {
                     </div>
                  </div>
                ))}
-               <div className="p-4 bg-slate-50/50 flex justify-between items-center">
+               <div className="py-4 bg-slate-50/50 flex justify-between items-center">
                   <span className="text-sm font-bold text-slate-600">Total Penukaran</span>
                   <span className="text-lg font-black text-violet-700">{Number(transaction.total_poin).toLocaleString('id-ID')} Poin</span>
                </div>
@@ -428,7 +428,7 @@ function QrCodeSection({ transactionId, kodePenukaran }: { transactionId: string
               <div className="p-8 flex-1 flex flex-col items-center justify-center min-h-0">
                  <div className="p-2 sm:p-4 bg-white border-2 border-slate-100 mb-2 w-full flex items-center justify-center" style={{ aspectRatio: '1/1' }}>
                     <QRCode
-                      value={qrRes?.qr_data || kodePenukaran}
+                      value={(qrRes?.qr_data || kodePenukaran).replace('TKR-', '')}
                       size={256}
                       style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                       viewBox={`0 0 256 256`}

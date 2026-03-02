@@ -64,7 +64,7 @@ export default function LoginPage() {
             Selamat Datang!
           </h1>
           <p className="text-slate-500 mt-2 text-sm leading-relaxed">
-            Ayo masuk untuk memulai!
+            Silakan masuk untuk memulai
           </p>
         </div>
         
@@ -125,7 +125,7 @@ export default function LoginPage() {
               variant="primary" 
               size="md"
               disabled={loading}
-              className="rounded-full cursor-pointer"
+              className="rounded-full cursor-pointer bg-violet-500 hover:bg-violet-600"
             >
               <span className="flex items-center">
                 Masuk Sekarang

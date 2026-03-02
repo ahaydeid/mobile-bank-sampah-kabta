@@ -22,7 +22,7 @@ export default function QrPage() {
         }
     }, []);
 
-    const memberId = userData?.username || 'MN-0000000';
+    const memberId = userData?.username || '0000000000';
     const fullName = userData?.profil?.nama_lengkap || 'Nasabah Bank Sampah';
 
     return (

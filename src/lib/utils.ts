@@ -25,8 +25,8 @@ export function getUserName(user: any): string {
   return 'Pengguna';
 }
 
-export function getImageUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
+export function getImageUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
   if (path.startsWith('http')) return path;
   
   // Asumsi Laravel Storage Link

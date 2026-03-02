@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'purple';
   size?: 'sm' | 'md' | 'lg' | 'icon';
   fullWidth?: boolean;
 }
@@ -10,18 +10,19 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', fullWidth, ...props }, ref) => {
     const variants = {
-      primary: 'bg-violet-600 text-white hover:bg-violet-700',
-      secondary: 'bg-amber-500 text-white hover:bg-amber-600',
-      outline: 'border border-slate-200 bg-transparent hover:bg-violet-50 text-violet-700',
-      ghost: 'bg-transparent hover:bg-violet-50 text-violet-700',
+      primary: 'bg-sky-600 text-white hover:bg-sky-700',
+      secondary: 'bg-slate-800 text-white hover:bg-slate-900',
+      outline: 'border border-slate-200 bg-transparent hover:bg-slate-50 text-slate-700',
+      ghost: 'bg-transparent hover:bg-slate-50 text-slate-600',
       danger: 'bg-red-600 text-white hover:bg-red-700',
+      purple: 'bg-purple-600 text-white hover:bg-purple-700',
     };
 
     const sizes = {
       sm: 'h-8 px-3 text-xs rounded-sm',
-      md: 'h-10 px-4 text-sm rounded-md',
-      lg: 'h-12 px-6 text-base rounded-md',
-      icon: 'h-10 w-10 p-2 rounded-md',
+      md: 'h-10 px-4 text-sm rounded-sm',
+      lg: 'h-11 px-6 text-base rounded-sm',
+      icon: 'h-9 w-9 p-2 rounded-sm',
     };
 
     return (

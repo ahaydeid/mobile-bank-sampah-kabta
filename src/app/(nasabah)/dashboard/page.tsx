@@ -176,7 +176,7 @@ function AktivitasList() {
 
     const setorItems = (setorRes?.data || []).map((item: any) => ({
       id: `setor-${item.id}`,
-      label: item.pos?.nama_pos || 'Setor Sampah',
+      label: item.kode_transaksi || 'Setor Sampah',
       date: item.tanggal_waktu,
       poin: `+${Number(item.total_poin).toLocaleString('id-ID')}`,
       color: 'text-emerald-600',

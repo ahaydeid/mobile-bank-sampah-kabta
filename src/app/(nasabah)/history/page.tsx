@@ -67,7 +67,7 @@ function SetorList() {
           className="px-4 py-3.5 flex items-center justify-between active:bg-slate-50 transition-colors"
         >
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">{item.pos?.nama_pos || 'Pos'}</p>
+            <p className="text-sm font-semibold text-slate-900">{item.kode_transaksi}</p>
             <p className="text-xs text-slate-400 mt-0.5">
               {formatDate(item.tanggal_waktu)} · {Number(item.total_berat).toFixed(1)} kg
             </p>

@@ -64,7 +64,7 @@ export default function DetailSetorPage() {
                <p className="text-[10px] uppercase font-bold tracking-wider opacity-80">Kode Transaksi</p>
                <h2 className="text-xl font-mono font-bold">{transaction.kode_transaksi}</h2>
             </div>
-            <div className="p-4 space-y-4">
+            <div className="py-4 space-y-4">
                <div className="grid grid-cols-2 gap-4">
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
@@ -143,9 +143,6 @@ export default function DetailSetorPage() {
              <CardContent className="p-0 divide-y divide-slate-50">
                {(transaction.detail || []).map((item: any, i: number) => (
                  <div key={i} className="p-4 flex gap-4">
-                    <div className="w-12 h-12 bg-slate-50 text-slate-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                       <Trash2 className="w-6 h-6" />
-                    </div>
                     <div className="flex-1 min-w-0">
                        <p className="text-sm font-bold text-slate-800 truncate">{item.sampah?.nama_sampah || 'Item Sampah'}</p>
                        <p className="text-xs text-slate-500">

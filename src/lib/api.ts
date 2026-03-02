@@ -73,6 +73,10 @@ export const api = {
     return api.get('/me');
   },
 
+  findUser: async (identifier: string) => {
+    return api.get(`/users/find/${identifier}`);
+  },
+
   logout: async () => {
     return api.post('/logout', {});
   },
@@ -133,8 +137,47 @@ export const api = {
     return api.get(`/setoran/${id}`);
   },
 
+  createSetoran: async (formData: FormData) => {
+    // We use standard fetch for FormData to let the browser set the boundary
+    const token = Cookies.get('token');
+    const response = await fetch(`${BASE_URL}/setoran`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Gagal menyimpan setoran');
+    }
+    return data;
+  },
+
+  getSampahTypes: async () => {
+    return api.get('/sampah');
+  },
+
+  changePassword: async (currentPassword: string, newPassword: string, newPasswordConfirmation: string) => {
+    return api.post('/change-password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+      new_password_confirmation: newPasswordConfirmation,
+    });
+  },
+
   getHistoryTukar: async (page: number = 1) => {
     return api.get(`/tukar-poin/history?page=${page}`);
+  },
+
+  getPetugasHistorySetor: async (page: number = 1) => {
+    return api.get(`/setoran?page=${page}`);
+  },
+
+  getPetugasHistoryTukar: async (page: number = 1) => {
+    return api.get(`/tukar-poin?page=${page}`);
   },
 
   getTukarDetail: async (id: number | string) => {
@@ -145,12 +188,20 @@ export const api = {
     return api.get(`/tukar-poin/${id}/qr`);
   },
 
+  scanRedeem: async (code: string) => {
+    return api.post('/tukar-poin/scan', { kode_penukaran: code });
+  },
+
+  confirmRedeem: async (id: number | string, posId: number | string) => {
+    return api.post(`/tukar-poin/${id}/konfirmasi-ambil`, { pos_id: posId });
+  },
+
   // Petugas Dashboard
   getPetugasStats: async () => {
     return api.get('/petugas/stats');
   },
 
   getPetugasQueue: async () => {
-    return api.get('/petugas/queue');
+    return api.get('/petugas/antrian');
   },
 };
