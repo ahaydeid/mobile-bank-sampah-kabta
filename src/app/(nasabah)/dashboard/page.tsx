@@ -111,7 +111,7 @@ export default function NasabahDashboard() {
                 <span className="text-[11px] font-semibold text-slate-700">Lokasi Unit</span>
               </Link>
               
-              <Link href="#" className="flex flex-col items-center gap-1.5 group">
+              <Link href="/nilai-sampah" className="flex flex-col items-center gap-1.5 group">
                 <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
                   <PackageX className="w-6 h-6" />
                 </div>

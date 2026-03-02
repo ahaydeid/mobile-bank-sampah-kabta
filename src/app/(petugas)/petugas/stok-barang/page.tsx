@@ -41,8 +41,7 @@ function StokBarangContent() {
           <ChevronLeft className="w-5 h-5 text-slate-700" />
         </button>
         <div>
-          <h1 className="text-lg font-bold text-slate-900">Stok Barang</h1>
-          <p className="text-[10px] text-slate-400 font-medium">{posName}</p>
+          <h1 className="text-lg font-bold text-slate-900">Stok Barang <span className="text-slate-400 font-medium italic">({posName})</span></h1>
         </div>
       </div>
 

@@ -16,17 +16,14 @@ function NilaiSampahContent() {
 
   const allSampah: any[] = sampahRes?.data || [];
 
-  // Get unique categories
   const categories = ['Semua', ...Array.from(new Set(allSampah.map((s: any) => s.kategori).filter(Boolean)))];
 
-  // Filter by selected category and search
   const filtered = allSampah.filter((s: any) => {
     const matchCategory = activeCategory === 'Semua' || s.kategori === activeCategory;
     const matchSearch = !search || s.nama_sampah.toLowerCase().includes(search.toLowerCase());
     return matchCategory && matchSearch;
   });
 
-  // Group by kategori for display
   const grouped = filtered.reduce((acc: Record<string, any[]>, item: any) => {
     const key = item.kategori || 'Lainnya';
     if (!acc[key]) acc[key] = [];
@@ -36,7 +33,6 @@ function NilaiSampahContent() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
-      {/* Header */}
       <div className="bg-white border-b border-slate-100 px-4 py-3 flex items-center gap-3 sticky top-0 z-20">
         <button onClick={() => router.back()} className="w-8 h-8 flex items-center justify-center rounded-sm hover:bg-slate-50 transition-colors">
           <ChevronLeft className="w-5 h-5 text-slate-700" />
@@ -47,7 +43,6 @@ function NilaiSampahContent() {
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -59,7 +54,6 @@ function NilaiSampahContent() {
           />
         </div>
 
-        {/* Category Chips */}
         {categories.length > 1 && (
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
             {categories.map((cat) => (
@@ -78,7 +72,6 @@ function NilaiSampahContent() {
           </div>
         )}
 
-        {/* Loading */}
         {isLoading && (
           <div className="flex flex-col items-center py-16">
             <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
@@ -86,7 +79,6 @@ function NilaiSampahContent() {
           </div>
         )}
 
-        {/* Error */}
         {error && !isLoading && (
           <div className="flex flex-col items-center py-16 text-center">
             <AlertCircle className="w-10 h-10 text-red-400 mb-3" />
@@ -95,7 +87,6 @@ function NilaiSampahContent() {
           </div>
         )}
 
-        {/* Grouped List */}
         {!isLoading && !error && Object.keys(grouped).length > 0 && (
           <div className="space-y-5">
             {Object.entries(grouped).map(([category, items]) => (
@@ -128,12 +119,13 @@ function NilaiSampahContent() {
           </div>
         )}
 
-        {/* Empty */}
-        {!isLoading && !error && allSampah.length === 0 && (
+        {!isLoading && !error && filtered.length === 0 && (
           <div className="text-center py-16">
             <Coins className="w-12 h-12 text-slate-200 mx-auto mb-3" />
             <p className="text-sm font-bold text-slate-500">Tidak Ada Data</p>
-            <p className="text-xs text-slate-400 mt-1">Belum ada jenis sampah yang terdaftar.</p>
+            <p className="text-xs text-slate-400 mt-1">
+              {search ? 'Tidak ditemukan yang cocok.' : 'Belum ada jenis sampah yang terdaftar.'}
+            </p>
           </div>
         )}
       </div>

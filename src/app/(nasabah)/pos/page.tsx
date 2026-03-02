@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { ChevronLeft, MapPin, Store, Loader2 } from 'lucide-react';
+import { ChevronLeft, MapPin, Store, Clock, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 
 export default function PosPage() {
@@ -45,6 +45,19 @@ export default function PosPage() {
                     <h3 className="font-semibold text-slate-900 text-sm">{unit.nama_pos}</h3>
                     {unit.alamat && (
                       <p className="text-[11px] text-slate-400 mt-0.5">{unit.alamat}</p>
+                    )}
+                    {(unit.jadwal_buka && unit.jadwal_tutup) ? (
+                      <div className="flex items-center gap-1.5 mt-1.5">
+                        <Clock className="w-3 h-3 text-blue-500" />
+                        <span className="text-[11px] font-medium text-blue-600">
+                          {unit.jadwal_buka.substring(0, 5)} – {unit.jadwal_tutup.substring(0, 5)} WIB
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 mt-1.5">
+                        <Clock className="w-3 h-3 text-slate-300" />
+                        <span className="text-[11px] text-slate-400">-</span>
+                      </div>
                     )}
                   </div>
                   <div className="flex gap-2">

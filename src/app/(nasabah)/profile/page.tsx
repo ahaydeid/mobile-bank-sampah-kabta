@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { User, Mail, Phone, LogOut, MapPin } from 'lucide-react';
+import { User, Mail, Phone, LogOut, MapPin, Lock, Eye, EyeOff, Loader2, X } from 'lucide-react';
 import { api } from '@/lib/api';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
@@ -17,16 +17,15 @@ export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
-      // 1. Initial Load from Cookie
       const cookieUser = Cookies.get('user');
       if(cookieUser) {
         try { setUser(JSON.parse(cookieUser)); } catch(e) {}
       }
 
-      // 2. Refresh from API
       try {
         const data = await api.get('/me');
         if (data && data.user) {
@@ -51,7 +50,7 @@ export default function ProfilePage() {
       showCancelButton: true,
       confirmButtonText: 'Ya, Keluar',
       cancelButtonText: 'Batal',
-      confirmButtonColor: '#ef4444', // Red 500
+      confirmButtonColor: '#ef4444',
       cancelButtonColor: '#94a3b8',
       customClass: {
         popup: 'rounded-xl',
@@ -161,14 +160,171 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
+      {/* Change Password Button */}
+      <button
+        onClick={() => setShowPasswordModal(true)}
+        className="w-full flex cursor-pointer items-center gap-3 px-5 py-3.5 bg-white border border-slate-100 rounded-sm hover:bg-slate-50 transition-colors active:scale-[0.99]"
+      >
+        <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
+          <Lock className="w-4.5 h-4.5 text-gray-600" />
+        </div>
+        <div className="flex-1 text-left">
+          <p className="text-sm text-slate-800">Ubah Kata Sandi</p>
+        </div>
+      </button>
+
       {/* Logout */}
       <Button 
         onClick={handleLogout}
         className="flex bg-transparent hover:bg-slate-100 cursor-pointer font-light text-red-500 items-center justify-center max-w-[200px] gap-2 mx-auto"
       >
-          <LogOut className="w-4 h-4" />
-          Keluar Aplikasi
+        <LogOut className="w-4 h-4" />
+        Keluar Aplikasi
       </Button>
+
+      {showPasswordModal && (
+        <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
+      )}
+    </div>
+  );
+}
+
+function ChangePasswordModal({ onClose }: { onClose: () => void }) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (newPassword.length < 8) {
+      setError('Password baru minimal 8 karakter.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError('Konfirmasi password tidak cocok.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await api.changePassword(currentPassword, newPassword, confirmPassword);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Password berhasil diubah.',
+        confirmButtonColor: '#7c3aed',
+      });
+      onClose();
+    } catch (err: any) {
+      const msg = err?.errors?.current_password?.[0]
+        || err?.errors?.new_password?.[0]
+        || err?.message
+        || 'Gagal mengubah password.';
+      setError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40">
+      <div
+        className="bg-white rounded-sm w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="text-sm font-bold text-slate-900">Ubah Kata Sandi</h3>
+          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-sm hover:bg-slate-200 transition-colors">
+            <X className="w-4 h-4 text-slate-500" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          {error && (
+            <div className="bg-red-50 border border-red-100 text-red-600 text-xs font-medium px-4 py-2.5 rounded-sm">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Password Lama</label>
+            <div className="relative">
+              <input
+                type={showCurrent ? 'text' : 'password'}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-sm text-sm text-slate-800 focus:outline-none focus:border-violet-400 pr-10"
+                placeholder="Masukkan password lama"
+              />
+              <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Password Baru</label>
+            <div className="relative">
+              <input
+                type={showNew ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                minLength={8}
+                className="w-full px-3 py-2.5 border border-slate-200 rounded-sm text-sm text-slate-800 focus:outline-none focus:border-violet-400 pr-10"
+                placeholder="Minimal 8 karakter"
+              />
+              <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Konfirmasi Password Baru</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="w-full px-3 py-2.5 border border-slate-200 rounded-sm text-sm text-slate-800 focus:outline-none focus:border-violet-400"
+              placeholder="Ketik ulang password baru"
+            />
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 bg-slate-100 text-slate-600 font-bold text-sm rounded-sm hover:bg-slate-200 transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 py-2.5 bg-violet-600 text-white font-bold text-sm rounded-sm hover:bg-violet-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Menyimpan...
+                </>
+              ) : (
+                'Simpan'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+      <div className="absolute inset-0 -z-10" onClick={onClose}></div>
     </div>
   );
 }
