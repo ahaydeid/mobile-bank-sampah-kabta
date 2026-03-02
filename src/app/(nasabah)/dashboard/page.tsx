@@ -63,6 +63,7 @@ export default function NasabahDashboard() {
               <Bell className="w-5 h-5" />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
           </Link>
+            <Link href="/profile">
             {user?.profil?.foto_profil ? (
                 <img 
                   src={getImageUrl(user.profil.foto_profil) || ''} 
@@ -73,7 +74,8 @@ export default function NasabahDashboard() {
                 <div className="w-10 h-10 rounded-full bg-violet-100 border-2 border-white flex items-center justify-center text-violet-600 font-bold text-sm">
                     {getUserName(user)[0] || "U"}
                 </div>
-            )} 
+            )}
+            </Link> 
         </div>
       </div>
 

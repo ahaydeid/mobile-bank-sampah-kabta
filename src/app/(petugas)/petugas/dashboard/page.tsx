@@ -51,7 +51,7 @@ export default function PetugasDashboard() {
             {unitName} • {mounted ? new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' }) : '...'}
           </p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-violet-100 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
+        <Link href="/petugas/profile" className="w-10 h-10 rounded-full bg-violet-100 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
            {user?.profil?.foto_profil ? (
              <img 
                src={getImageUrl(user.profil.foto_profil) || ''} 
@@ -63,7 +63,7 @@ export default function PetugasDashboard() {
                 {officerName.charAt(0)}
              </span>
            )}
-        </div>
+        </Link>
       </div>
 
       {/* Daily Summary Stats */}
