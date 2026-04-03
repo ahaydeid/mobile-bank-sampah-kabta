@@ -43,10 +43,10 @@ export default function HistoryPage() {
 
       <div>
         <div style={{ display: activeTab === 'setor' ? 'block' : 'none' }}>
-          <SetorList />
+          <SetorList isActive={activeTab === 'setor'} />
         </div>
         <div style={{ display: activeTab === 'tukar' ? 'block' : 'none' }}>
-          <TukarList />
+          <TukarList isActive={activeTab === 'tukar'} />
         </div>
       </div>
     </div>
@@ -55,18 +55,20 @@ export default function HistoryPage() {
 
 // --- Setor List ---
 
-function SetorList() {
+function SetorList({ isActive }: { isActive: boolean }) {
   const [page, setPage] = React.useState(1);
   const [allData, setAllData] = React.useState<any[]>([]);
   const [lastPage, setLastPage] = React.useState(1);
   const [hasLoaded, setHasLoaded] = React.useState(false);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
 
   const { isLoading } = useSWR(
-    `history-setor-${page}`,
+    isActive ? `history-setor-${page}` : null,
     () => api.getHistorySetor(page),
     {
       keepPreviousData: true,
       onSuccess: (data) => {
+        setLoadError(null);
         if (page === 1) {
           setAllData(data?.data || []);
         } else {
@@ -75,12 +77,17 @@ function SetorList() {
         setLastPage(data?.last_page || 1);
         setHasLoaded(true);
       },
+      onError: (error) => {
+        setLoadError(error?.message || 'Gagal memuat riwayat setor.');
+        setHasLoaded(true);
+      },
     }
   );
 
   const hasMore = page < lastPage;
 
   if (!hasLoaded) return <LoadingState />;
+  if (loadError) return <EmptyState message={loadError} />;
   if (allData.length === 0) return <EmptyState message="Belum ada riwayat setor" />;
 
   return (
@@ -129,18 +136,20 @@ function SetorList() {
 
 // --- Tukar List ---
 
-function TukarList() {
+function TukarList({ isActive }: { isActive: boolean }) {
   const [page, setPage] = React.useState(1);
   const [allData, setAllData] = React.useState<any[]>([]);
   const [lastPage, setLastPage] = React.useState(1);
   const [hasLoaded, setHasLoaded] = React.useState(false);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
 
   const { isLoading } = useSWR(
-    `history-tukar-${page}`,
+    isActive ? `history-tukar-${page}` : null,
     () => api.getHistoryTukar(page),
     {
       keepPreviousData: true,
       onSuccess: (data) => {
+        setLoadError(null);
         if (page === 1) {
           setAllData(data?.data || []);
         } else {
@@ -149,12 +158,17 @@ function TukarList() {
         setLastPage(data?.last_page || 1);
         setHasLoaded(true);
       },
+      onError: (error) => {
+        setLoadError(error?.message || 'Gagal memuat riwayat tukar.');
+        setHasLoaded(true);
+      },
     }
   );
 
   const hasMore = page < lastPage;
 
   if (!hasLoaded) return <LoadingState />;
+  if (loadError) return <EmptyState message={loadError} />;
   if (allData.length === 0) return <EmptyState message="Belum ada riwayat tukar" />;
 
   return (

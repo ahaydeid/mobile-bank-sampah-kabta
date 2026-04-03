@@ -23,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+.codex
+bank-sampah-mobile.tar
 
 # debug
 npm-debug.log*
