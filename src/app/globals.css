@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme {
+  /* Purple Primary */
+  --color-primary: #7c3aed; /* Violet 600 */
+  --color-primary-foreground: #ffffff;
+  
+  /* Gold Secondary/Accent */
+  --color-secondary: #d97706; /* Amber 600 */
+  --color-secondary-foreground: #ffffff;
+
+  --color-accent: #faf5ff; /* Purple 50 */
+  --color-accent-foreground: #4c1d95;
+
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+
+  --font-sans: var(--font-poppins);
+}
+
+/* Custom Base Styles */
+@layer base {
+  html {
+    @apply bg-slate-100 min-h-screen flex justify-center;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased w-full max-w-md min-h-screen;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Force override browser autofill background */
+.no-autofill-bg:-webkit-autofill,
+.no-autofill-bg:-webkit-autofill:hover, 
+.no-autofill-bg:-webkit-autofill:focus, 
+.no-autofill-bg:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+    -webkit-text-fill-color: #0f172a !important;
+}
+
+.no-autofill-bg-focus:focus:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
