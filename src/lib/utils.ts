@@ -28,7 +28,7 @@ export function getUserName(user: any): string {
 export function getImageUrl(path: string | null | undefined): string | undefined {
   if (!path) return undefined;
   if (path.startsWith('http')) return path;
-  
+
   // Asumsi Laravel Storage Link
   const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:8000';
   return `${baseUrl}/storage/${path}`;
@@ -36,7 +36,7 @@ export function getImageUrl(path: string | null | undefined): string | undefined
 
 export function getGreeting(): string {
   const hour = new Date().getHours();
-  if (hour >= 4 && hour < 11) return 'Selamat Pagi';
+  if (hour >= 4 && hour < 11) return 'Selamat Pagi ⛅';
   if (hour >= 11 && hour < 15) return 'Selamat Siang';
   if (hour >= 15 && hour < 18) return 'Selamat Sore';
   return 'Selamat Malam';

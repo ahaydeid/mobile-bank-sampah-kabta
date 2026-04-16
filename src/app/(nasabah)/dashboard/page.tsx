@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import useSWR from 'swr';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -9,43 +10,24 @@ import { Wallet, Bell, PackageX, Lightbulb, Headset, Calendar, Store } from 'luc
 import Cookies from 'js-cookie';
 import { api } from '@/lib/api';
 import { getUserName, getImageUrl, getGreeting, cn } from '@/lib/utils';
+import { useUser } from '@/hooks/useUser';
 
 export default function NasabahDashboard() {
-  const [user, setUser] = React.useState<any>(null);
-  const [loading, setLoading] = React.useState(true);
+  const { user, isLoading: loading } = useUser();
   const [greeting, setGreeting] = React.useState('Selamat datang');
+  
+  // TODO: Jika API Backend /notifications sudah benar-benar siap dan bisa diakses,
+  // silakan buka komentar barisan kode di bawah ini:
+  /*
+  const { data: notifData } = useSWR('/notifications', api.getNotifications);
+  const unreadCount = notifData?.count || notifData?.notifications?.filter((n: any) => !n.read_at).length || 0;
+  */
+  
+  // Dummy data sementara:
+  const unreadCount = 2;
 
   React.useEffect(() => {
     setGreeting(getGreeting());
-    // ... (logic fetch user sama)
-    const fetchUser = async () => {
-    // ...
-      // 1. First, try to load from Cookie (fastest)
-      const userCookie = Cookies.get('user');
-      if (userCookie) {
-         try {
-            const parsedUser = JSON.parse(userCookie);
-            setUser(parsedUser); 
-         } catch(e) { console.error("Cookie parse error", e); }
-      }
-
-      // 2. Then, try to refresh from API
-      try {
-        const data = await api.get('/me');
-        if (data && data.user) {
-          setUser(data.user);
-          // Update cookie with fresh data
-          Cookies.set('user', JSON.stringify(data.user), { expires: 7, path: '/' });
-        }
-      } catch (e: any) {
-        console.error("Failed to fetch fresh user data", e);
-        // Do NOT set user to null here, keep the cookie value if it exists
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
   }, []);
 
   return (
@@ -61,14 +43,21 @@ export default function NasabahDashboard() {
         <div className="flex gap-3">
           <Link href="/notifications" className="inline-flex items-center justify-center rounded-full bg-white text-slate-600 relative w-10 h-10 hover:bg-slate-50 transition-colors">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center px-1 text-[9px] font-bold text-white bg-red-500 rounded-full border-2 border-white leading-none">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
           </Link>
             <Link href="/profile">
             {user?.profil?.foto_profil ? (
-                <img 
+                <Image 
                   src={getImageUrl(user.profil.foto_profil) || ''} 
                   alt="Profile" 
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full border-2 border-white object-cover bg-slate-200"
+                  unoptimized
                 />
             ) : (
                 <div className="w-10 h-10 rounded-full bg-violet-100 border-2 border-white flex items-center justify-center text-violet-600 font-bold text-sm">

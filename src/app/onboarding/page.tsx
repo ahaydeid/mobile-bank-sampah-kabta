@@ -1,39 +1,45 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { ArrowRight, Recycle, Coins, Gift } from 'lucide-react';
-import { cn } from '@/lib/utils'; // Assuming utils exists
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Preload images
+  useEffect(() => {
+    const images = ['/onboarding/slide-1.jpeg', '/onboarding/slide-2.jpeg', '/onboarding/slide-3.jpeg'];
+    images.forEach(src => {
+      const img = new window.Image();
+      img.src = src;
+    });
+  }, []);
+
   const slides = [
     {
       id: 1,
-      title: "Pilah Sampahmu",
-      description: "Pisahkan sampah organik dan anorganik untuk lingkungan yang lebih baik.",
-      icon: Recycle,
-      color: "text-violet-600",
-      bgColor: "bg-violet-100",
+      titlePart1: "Pilah",
+      titlePart2: "Sampahmu",
+      description: "Pisahkan berdasarkan jenisnya dengan mudah dan praktis.",
+      image: "/onboarding/slide-1.jpeg",
     },
     {
       id: 2,
-      title: "Kumpulkan Poin",
-      description: "Setor sampah ke bank sampah terdekat dan dapatkan poin menarik.",
-      icon: Coins,
-      color: "text-amber-500",
-      bgColor: "bg-amber-100",
+      titlePart1: "Kumpulkan",
+      titlePart2: "Koinmu",
+      description: "Jadikan sampahmu menjadi saldo digital, menguntungkan setiap hari.",
+      image: "/onboarding/slide-2.jpeg",
     },
     {
       id: 3,
-      title: "Tukar Rewards",
-      description: "Tukarkan poinmu dengan sembako atau kebutuhan sehari-hari lainnya.",
-      icon: Gift,
-      color: "text-violet-600",
-      bgColor: "bg-violet-100",
+      titlePart1: "Tukar Koin &",
+      titlePart2: "Event",
+      description: "Tukar koin menjadi hadiah menarik & menangkan berbagai event seru!",
+      image: "/onboarding/slide-3.jpeg",
     },
   ];
 
@@ -50,73 +56,124 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      {/* Skip Button */}
-      <div className="flex justify-end p-6">
-        <button 
+    <main className="min-h-screen flex flex-col bg-[#FFFF] overflow-hidden font-sans relative">
+      {/* Header Skip */}
+      <header className="w-full flex justify-end px-6 pt-8 pb-4 absolute top-0 z-20">
+        <button
           onClick={handleSkip}
-          className="text-sm font-medium text-slate-400 hover:text-slate-600"
+          className="text-[13px] font-bold text-[#5aba1a] bg-[#5aba1a]/10 hover:bg-[#5aba1a]/20 transition-colors px-5 py-2.5 rounded-full"
         >
           Lewati
         </button>
-      </div>
+      </header>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <div className="w-full max-w-[320px] aspect-square relative mb-8 flex items-center justify-center">
-             {/* Illustration Placeholder (Since generation failed) */}
-             <div className={cn(
-                "w-64 h-64 rounded-full flex items-center justify-center transition-colors duration-500",
-                slides[currentSlide].bgColor
-             )}>
-                {React.createElement(slides[currentSlide].icon, {
-                    className: cn("w-32 h-32 transition-colors duration-500", slides[currentSlide].color),
-                    strokeWidth: 1.5
-                })}
-             </div>
-        </div>
-
-        <h2 className="text-2xl font-bold text-slate-900 mb-3 transition-all duration-300">
-          {slides[currentSlide].title}
-        </h2>
-        <p className="text-slate-500 text-sm leading-relaxed max-w-xs transition-all duration-300">
+      {/* Top Text Content (Title & Desc) */}
+      <div className="pt-[90px] pb-6 px-6 text-center z-10 flex flex-col items-center">
+        <h1 className="text-[24px] leading-tight font-extrabold text-[#2D2D3A] mb-2 tracking-tight max-w-[300px]">
+          {slides[currentSlide].titlePart1} <span className="text-[#5aba1a]">{slides[currentSlide].titlePart2}</span>
+        </h1>
+        <p className="text-[#84879D] text-[12px] leading-relaxed max-w-[280px] h-10 font-medium">
           {slides[currentSlide].description}
         </p>
       </div>
 
+      {/* Carousel */}
+      <div className="flex-1 w-full relative flex items-center justify-center overflow-hidden">
+        <div className="w-full h-[55vh] min-h-[350px] max-h-[500px] relative flex items-center justify-center">
+          {slides.map((slide, index) => {
+            const difference = index - currentSlide;
+
+            // Animation logic mimicking a 3D horizontal carousel
+            let translate = 'translate-x-[0%]';
+            let zIndex = 'z-10';
+            let scale = 'scale-100';
+            let opacity = 'opacity-100';
+
+            if (difference === 1) {
+              translate = 'translate-x-[90%]';
+              zIndex = 'z-0';
+              scale = 'scale-[0.80]';
+              opacity = 'opacity-40 hover:opacity-70 cursor-pointer';
+            } else if (difference === -1) {
+              translate = '-translate-x-[90%]';
+              zIndex = 'z-0';
+              scale = 'scale-[0.80]';
+              opacity = 'opacity-40 hover:opacity-70 cursor-pointer';
+            } else if (difference > 1) {
+              translate = 'translate-x-[180%]';
+              zIndex = '-z-10';
+              scale = 'scale-[0.7]';
+              opacity = 'opacity-0';
+            } else if (difference < -1) {
+              translate = '-translate-x-[180%]';
+              zIndex = '-z-10';
+              scale = 'scale-[0.7]';
+              opacity = 'opacity-0';
+            }
+
+            return (
+              <div
+                key={slide.id}
+                className={cn(
+                  "absolute w-[72%] max-w-[250px] h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] rounded-2xl overflow-hidden shadow-sm bg-white",
+                  translate,
+                  zIndex,
+                  scale,
+                  opacity
+                )}
+                onClick={() => {
+                  if (difference === 1) setCurrentSlide(curr => curr + 1);
+                  if (difference === -1) setCurrentSlide(curr => curr - 1);
+                }}
+              >
+                <div className="absolute inset-0 bg-slate-100 animate-pulse" /> {/* Placeholder loading */}
+                <Image
+                  src={slide.image}
+                  alt={slide.titlePart1}
+                  fill
+                  sizes="(max-width: 768px) 80vw, 300px"
+                  className="object-cover"
+                  draggable={false}
+                  loading={currentSlide === index ? "eager" : "lazy"}
+                  priority={currentSlide === index}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Footer Controls */}
-      <div className="p-8">
-        {/* Indicators */}
-        <div className="flex justify-center gap-2 mb-8">
+      <footer className="w-full px-8 pb-[10vh] pt-6 flex flex-col items-center bg-transparent z-10 gap-10">
+        {/* Dots */}
+        <div className="flex justify-center gap-2">
           {slides.map((_, index) => (
-            <div 
+            <button
               key={index}
+              onClick={() => setCurrentSlide(index)}
               className={cn(
-                "h-2 rounded-full transition-all duration-300",
-                currentSlide === index 
-                  ? "w-8 bg-violet-600" 
-                  : "w-2 bg-slate-200"
+                "h-[6px] rounded-full transition-all duration-500",
+                currentSlide === index ? "w-6 bg-[#2D2D3A]" : "w-[6px] bg-[#D4D5DF]"
               )}
+              aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
 
         {/* Action Button */}
-        <Button 
-          fullWidth 
-          variant={currentSlide === slides.length - 1 ? "secondary" : "primary"}
+        <Button
+          fullWidth
+          variant="primary"
           onClick={handleNext}
-          className="h-12"
+          className="h-10 rounded-full text-[12px] font-bold shadow-sm bg-[#2A2A2E] hover:bg-black border-none text-white max-w-sm transition-transform active:scale-95"
         >
           {currentSlide === slides.length - 1 ? (
             "Mulai Sekarang"
           ) : (
-            <span className="flex items-center">
-              Selanjutnya <ArrowRight className="ml-2 w-4 h-4" />
-            </span>
+            "Selanjutnya"
           )}
         </Button>
-      </div>
-    </div>
+      </footer>
+    </main>
   );
 }

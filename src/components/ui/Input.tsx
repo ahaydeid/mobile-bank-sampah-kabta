@@ -12,7 +12,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || props.name;
 
     return (
-      <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")}>
+      <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")} suppressHydrationWarning>
         {label && (
           <label 
             htmlFor={inputId} 

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
@@ -57,16 +58,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid bg-white p-6 place-items-center content-center">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-10">
+    <main className="min-h-screen grid bg-white p-6 place-items-center content-center" suppressHydrationWarning>
+      <section className="w-full max-w-sm" suppressHydrationWarning>
+        <header className="text-center mb-10" suppressHydrationWarning>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             Selamat Datang!
           </h1>
           <p className="text-slate-500 mt-2 text-sm leading-relaxed">
             Silakan masuk untuk memulai
           </p>
-        </div>
+        </header>
         
         <form onSubmit={handleLogin} className="space-y-5">
           <Input
@@ -79,7 +80,7 @@ export default function LoginPage() {
             autoFocus
           />
           
-          <div className="space-y-1">
+          <fieldset className="space-y-1 block border-0 p-0 m-0" suppressHydrationWarning>
             <div className="relative">
               <Input
                 label="Password"
@@ -110,15 +111,15 @@ export default function LoginPage() {
               </p>
             )}
 
-            <div className="flex justify-end">
+            <div className="flex justify-end" suppressHydrationWarning>
 
-              <a href="#" className="text-xs text-violet-600 hover:text-violet-500">
+              <Link href="/forgot-password" className="text-xs text-violet-600 hover:text-violet-500 transition-colors">
                 Lupa Password?
-              </a>
+              </Link>
             </div>
-          </div>
+          </fieldset>
 
-          <div className="pt-4">
+          <div className="pt-4" suppressHydrationWarning>
             <Button 
               type="submit" 
               fullWidth 
@@ -134,15 +135,15 @@ export default function LoginPage() {
           </div>
         </form>
 
-        <div className="mt-8 text-center">
+        <footer className="mt-8 text-center" suppressHydrationWarning>
           <p className="text-sm text-slate-500">
             Belum punya akun?{' '}
-            <a href="#" className="text-violet-600 hover:text-violet-500">
+            <Link href="/register" className="text-violet-600 font-medium hover:text-violet-500 transition-colors">
               Daftar Sekarang
-            </a>
+            </Link>
           </p>
-        </div>
-      </div>
+        </footer>
+      </section>
       
       {/* Loading Overlay */}
       {loading && (
@@ -153,6 +154,6 @@ export default function LoginPage() {
             </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

@@ -47,9 +47,9 @@ export function BottomNavPetugas() {
             const Icon = item.icon;
 
             if (item.isPrimary) {
-               return (
+              return (
                 <div key={item.href} className="relative -top-5">
-                   <Link
+                  <Link
                     href={item.href}
                     className={cn(
                       "flex flex-col items-center justify-center w-14 h-14 rounded-full bg-violet-600 text-white shadow-md shadow-violet-200 transition-transform active:scale-95",
@@ -59,7 +59,7 @@ export function BottomNavPetugas() {
                   </Link>
                   <span className="text-[10px] font-medium text-slate-500 block text-center mt-1">{item.label}</span>
                 </div>
-               )
+              )
             }
 
             return (
@@ -68,8 +68,8 @@ export function BottomNavPetugas() {
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors active:scale-95",
-                  isActive 
-                    ? "text-violet-600" 
+                  isActive
+                    ? "text-violet-600"
                     : "text-slate-400 hover:text-slate-600"
                 )}
               >

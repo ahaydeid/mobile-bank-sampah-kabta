@@ -63,7 +63,16 @@ export function SWRCacheProvider({ children }: { children: React.ReactNode }) {
       revalidateIfStale: true,
       revalidateOnFocus: true,
       revalidateOnReconnect: true,
-      dedupingInterval: 5000
+      dedupingInterval: 5000,
+      errorRetryCount: 3,
+      onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+        // Jangan retry jika HTTP 404 atau 403 atau 401
+        if (error.status === 404 || error.status === 403 || error.status === 401) return;
+        // Hanya coba ulang maksimal 3 kali
+        if (retryCount >= 3) return;
+        // Jeda waktu retry eksponensial (misal: 3 detik, lalu 5 detik, dst)
+        setTimeout(() => revalidate({ retryCount }), Math.min(3000 * (1.5 ** retryCount), 15000));
+      }
     }}>
       {children}
     </SWRConfig>

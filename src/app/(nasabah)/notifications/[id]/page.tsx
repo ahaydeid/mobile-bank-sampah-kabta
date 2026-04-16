@@ -9,10 +9,27 @@ import {
   Bell, 
   AlertCircle,
   Clock,
-  Calendar
+  Calendar,
+  Recycle,
+  Wallet,
+  AlertTriangle,
+  PackageX,
+  UserPlus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DUMMY_NOTIFICATIONS } from '../page';
+
+const iconMap: Record<string, any> = {
+  'recycle': Recycle,
+  'wallet': Wallet,
+  'alert-triangle': AlertTriangle,
+  'package-x': PackageX,
+  'user-plus': UserPlus,
+  'gift': Gift,
+  'trash2': Trash2,
+  'bell': Bell,
+  'info': Bell,
+};
 
 export default function NotificationDetailPage() {
   const params = useParams();
@@ -36,6 +53,8 @@ export default function NotificationDetailPage() {
     );
   }
 
+  const IconComponent = iconMap[notif.icon as string] || Bell;
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -56,7 +75,7 @@ export default function NotificationDetailPage() {
                 notif.color === 'sky' && "bg-sky-50 text-sky-600",
                 notif.color === 'amber' && "bg-amber-50 text-amber-600",
             )}>
-              <notif.icon className="w-8 h-8" />
+              <IconComponent className="w-8 h-8" />
             </div>
             <h1 className="text-xl font-black text-slate-900 mb-3 tracking-tight">{notif.title}</h1>
             <div className="flex items-center justify-center gap-4 text-slate-400">

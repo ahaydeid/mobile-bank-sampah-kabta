@@ -51,8 +51,8 @@ export function BottomNavNasabah() {
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center w-full h-full space-y-1",
-                  isActive 
-                    ? "text-violet-600" 
+                  isActive
+                    ? "text-violet-600"
                     : "text-slate-400 hover:text-slate-600"
                 )}
               >

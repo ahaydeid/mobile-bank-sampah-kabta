@@ -204,4 +204,21 @@ export const api = {
   getPetugasQueue: async () => {
     return api.get('/petugas/antrian');
   },
+
+  // Notifications
+  getNotifications: async () => {
+    return api.get('/notifications');
+  },
+
+  markAllNotificationsRead: async () => {
+    return api.post('/notifications/mark-all-read', {});
+  },
+
+  deleteAllNotifications: async () => {
+    return api.post('/notifications/dismiss-all', {});
+  },
+
+  deleteNotification: async (id: string | number) => {
+    return api.post('/notifications/dismiss', { id });
+  },
 };
