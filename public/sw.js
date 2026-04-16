@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bank-sampah-v2';
+const CACHE_NAME = 'bank-sampah-v3';
 
 // Assets to precache on install (app shell)
 const PRECACHE_URLS = [

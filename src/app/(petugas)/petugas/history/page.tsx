@@ -3,13 +3,10 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { 
-  ChevronLeft, 
-  Scale, 
-  Package, 
+import {
+  Loader2,
   Clock,
   Calendar,
-  Loader2
 } from 'lucide-react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
@@ -23,19 +20,14 @@ type TabKey = typeof tabs[number]['key'];
 
 export default function PetugasHistoryPage() {
   const [activeTab, setActiveTab] = React.useState<TabKey>('setor');
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const { data: setorRes, isLoading: isLoadingSetor } = useSWR(
-    activeTab === 'setor' ? 'petugas-history-setor' : null, 
+    activeTab === 'setor' ? 'petugas-history-setor' : null,
     () => api.getPetugasHistorySetor()
   );
-  
+
   const { data: tukarRes, isLoading: isLoadingTukar } = useSWR(
-    activeTab === 'tukar' ? 'petugas-history-tukar' : null, 
+    activeTab === 'tukar' ? 'petugas-history-tukar' : null,
     () => api.getPetugasHistoryTukar()
   );
 
@@ -44,7 +36,6 @@ export default function PetugasHistoryPage() {
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
-      {/* Header + Tabs (sticky) */}
       <div className="sticky top-0 z-20 bg-white border-b border-slate-100">
         <div className="px-4 pt-4 pb-2 flex items-center gap-3">
           <h1 className="text-lg font-bold text-slate-900 tracking-tight">Riwayat Transaksi</h1>
@@ -56,9 +47,7 @@ export default function PetugasHistoryPage() {
               onClick={() => setActiveTab(tab.key)}
               className={cn(
                 'flex-1 py-3 text-sm font-semibold text-center transition-all relative',
-                activeTab === tab.key
-                  ? 'text-violet-600'
-                  : 'text-slate-400'
+                activeTab === tab.key ? 'text-violet-600' : 'text-slate-400'
               )}
             >
               {tab.label}
@@ -70,7 +59,6 @@ export default function PetugasHistoryPage() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 px-1 py-1 pb-24">
         {activeTab === 'setor' ? (
           <div className="space-y-1">
@@ -129,7 +117,7 @@ export default function PetugasHistoryPage() {
                           </div>
                           {status && (
                             <span className={cn(
-                              "text-[9px] px-1.5 py-0.5 rounded tracking-wider text-white font-bold uppercase",
+                              'text-[9px] px-1.5 py-0.5 rounded tracking-wider text-white font-bold uppercase',
                               status.bg
                             )}>
                               {status.label}
@@ -146,19 +134,18 @@ export default function PetugasHistoryPage() {
         )}
       </div>
 
-      {/* Empty State */}
       {!isLoadingSetor && !isLoadingTukar && (activeTab === 'setor' ? setorData.length : tukarData.length) === 0 && (
-         <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
-            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">Tidak ada riwayat</p>
-            <p className="text-xs text-slate-400 mt-1 max-w-[200px]">Belum ada transaksi yang tercatat pada kategori ini.</p>
-         </div>
+        <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
+          <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">Tidak ada riwayat</p>
+          <p className="text-xs text-slate-400 mt-1 max-w-[200px]">Belum ada transaksi yang tercatat pada kategori ini.</p>
+        </div>
       )}
     </div>
   );
 }
 
 function formatDate(dateStr: string): string {
-  if (typeof window === 'undefined') return ''; // Safety for SSR
+  if (typeof window === 'undefined') return '';
   const date = new Date(dateStr);
   return date.toLocaleDateString('id-ID', {
     day: 'numeric',
