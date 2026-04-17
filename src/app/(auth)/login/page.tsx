@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
@@ -14,12 +15,12 @@ import Cookies from 'js-cookie';
 const MySwal = withReactContent(Swal);
 
 export default function LoginPage() {
-  const router = useRouter();  
-   const [identifier, setIdentifier] = useState('');
-   const [password, setPassword] = useState('');
-   const [showPassword, setShowPassword] = useState(false);
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState('');
+  const router = useRouter();
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -31,14 +32,14 @@ export default function LoginPage() {
     try {
       // Real API Call
       const response = await api.login(identifier, password);
-      
+
       // Save Token & Role
       Cookies.set('token', response.token, { expires: 7, path: '/' });
       Cookies.set('role', response.role, { expires: 7, path: '/' });
       Cookies.set('user', JSON.stringify(response.user), { expires: 7, path: '/' });
 
-      const role = response.role?.toLowerCase().trim(); 
-      
+      const role = response.role?.toLowerCase().trim();
+
       // Redirect based on role
       if (role === 'member' || role === 'nasabah') {
         router.push('/dashboard');
@@ -60,7 +61,17 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen grid bg-white p-6 place-items-center content-center" suppressHydrationWarning>
       <section className="w-full max-w-sm" suppressHydrationWarning>
-        <header className="text-center mb-10" suppressHydrationWarning>
+        <header className="text-center mb-15" suppressHydrationWarning>
+          <div className="flex justify-center mb-10">
+            <Image
+              src="/logo-sankara.webp"
+              alt="Logo Bank Sampah Sankara"
+              width={240}
+              height={240}
+              className="object-contain drop-shadow-sm"
+              priority
+            />
+          </div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
             Selamat Datang!
           </h1>
@@ -68,7 +79,7 @@ export default function LoginPage() {
             Silakan masuk untuk memulai
           </p>
         </header>
-        
+
         <form onSubmit={handleLogin} className="space-y-5">
           <Input
             label="Username"
@@ -79,7 +90,7 @@ export default function LoginPage() {
             required
             autoFocus
           />
-          
+
           <fieldset className="space-y-1 block border-0 p-0 m-0" suppressHydrationWarning>
             <div className="relative">
               <Input
@@ -104,7 +115,7 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
-            
+
             {error && (
               <p className="text-xs bg-red-50 text-red-500 mt-5 p-3. text-center animate-in fade-in slide-in-from-top-1">
                 {error}
@@ -120,10 +131,10 @@ export default function LoginPage() {
           </fieldset>
 
           <div className="pt-4" suppressHydrationWarning>
-            <Button 
-              type="submit" 
-              fullWidth 
-              variant="primary" 
+            <Button
+              type="submit"
+              fullWidth
+              variant="primary"
               size="md"
               disabled={loading}
               className="rounded-full cursor-pointer bg-violet-500 hover:bg-violet-600"
@@ -144,14 +155,14 @@ export default function LoginPage() {
           </p>
         </footer>
       </section>
-      
+
       {/* Loading Overlay */}
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="flex flex-col items-center">
-                <Loader2 className="w-8 h-8 text-white animate-spin mb-2" />
-                <p className="text-xs font-bold text-white">Tunggu sebentar...</p>
-            </div>
+          <div className="flex flex-col items-center">
+            <Loader2 className="w-8 h-8 text-white animate-spin mb-2" />
+            <p className="text-xs font-bold text-white">Tunggu sebentar...</p>
+          </div>
         </div>
       )}
     </main>
