@@ -56,7 +56,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#FFFF] overflow-hidden font-sans relative">
+    <main className="h-[100dvh] max-h-[100dvh] w-full flex flex-col bg-[#FFFF] overflow-hidden font-sans relative overscroll-none">
       {/* Header Skip */}
       <header className="w-full flex justify-end px-6 pt-8 pb-4 absolute top-0 z-20">
         <button
@@ -68,7 +68,7 @@ export default function OnboardingPage() {
       </header>
 
       {/* Top Text Content (Title & Desc) */}
-      <div className="pt-[90px] pb-6 px-6 text-center z-10 flex flex-col items-center">
+      <div className="pt-20 md:pt-24 pb-4 px-6 text-center z-10 flex flex-col items-center shrink-0">
         <h1 className="text-[24px] leading-tight font-extrabold text-[#2D2D3A] mb-2 tracking-tight max-w-[300px]">
           {slides[currentSlide].titlePart1} <span className="text-[#5aba1a]">{slides[currentSlide].titlePart2}</span>
         </h1>
@@ -78,8 +78,8 @@ export default function OnboardingPage() {
       </div>
 
       {/* Carousel */}
-      <div className="flex-1 w-full relative flex items-center justify-center overflow-hidden">
-        <div className="w-full h-[55vh] min-h-[350px] max-h-[500px] relative flex items-center justify-center">
+      <div className="flex-1 w-full relative flex items-center justify-center overflow-hidden min-h-0 py-2">
+        <div className="w-full h-[55vh] max-h-[450px] relative flex items-center justify-center">
           {slides.map((slide, index) => {
             const difference = index - currentSlide;
 
@@ -115,7 +115,7 @@ export default function OnboardingPage() {
               <div
                 key={slide.id}
                 className={cn(
-                  "absolute w-[72%] max-w-[250px] h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] rounded-2xl overflow-hidden shadow-sm bg-white",
+                  "absolute w-[72%] max-w-[260px] h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] rounded-2xl overflow-hidden shadow-sm bg-white",
                   translate,
                   zIndex,
                   scale,
@@ -144,7 +144,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Footer Controls */}
-      <footer className="w-full px-8 pb-[10vh] pt-6 flex flex-col items-center bg-transparent z-10 gap-10">
+      <footer className="w-full px-8 pb-[8vh] pt-2 flex flex-col items-center bg-transparent z-10 gap-6 shrink-0">
         {/* Dots */}
         <div className="flex justify-center gap-2">
           {slides.map((_, index) => (
