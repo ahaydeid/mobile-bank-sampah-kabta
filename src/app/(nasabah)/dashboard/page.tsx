@@ -6,7 +6,7 @@ import Image from 'next/image';
 import useSWR from 'swr';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Wallet, Bell, PackageX, Lightbulb, Headset, Calendar, Store } from 'lucide-react';
+import { Wallet, Bell, PackageX, Lightbulb, Headset, Calendar, Store, HelpCircle } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { api } from '@/lib/api';
 import { getUserName, getImageUrl, getGreeting, cn } from '@/lib/utils';
@@ -15,14 +15,14 @@ import { useUser } from '@/hooks/useUser';
 export default function NasabahDashboard() {
   const { user, isLoading: loading } = useUser();
   const [greeting, setGreeting] = React.useState('Selamat datang');
-  
+
   // TODO: Jika API Backend /notifications sudah benar-benar siap dan bisa diakses,
   // silakan buka komentar barisan kode di bawah ini:
   /*
   const { data: notifData } = useSWR('/notifications', api.getNotifications);
   const unreadCount = notifData?.count || notifData?.notifications?.filter((n: any) => !n.read_at).length || 0;
   */
-  
+
   // Dummy data sementara:
   const unreadCount = 2;
 
@@ -35,36 +35,36 @@ export default function NasabahDashboard() {
       {/* Header */}
       <div className="flex justify-between items-center pt-2">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight" suppressHydrationWarning>
             {loading ? 'Halo...' : `Halo, ${getUserName(user)}!`}
           </h1>
           <p className="text-sm text-slate-500">{greeting}</p>
         </div>
         <div className="flex gap-3">
           <Link href="/notifications" className="inline-flex items-center justify-center rounded-full bg-white text-slate-600 relative w-10 h-10 hover:bg-slate-50 transition-colors">
-              <Bell className="w-5 h-5" />
-              {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center px-1 text-[9px] font-bold text-white bg-red-500 rounded-full border-2 border-white leading-none">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </span>
-              )}
-          </Link>
-            <Link href="/profile">
-            {user?.profil?.foto_profil ? (
-                <Image 
-                  src={getImageUrl(user.profil.foto_profil) || ''} 
-                  alt="Profile" 
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 rounded-full border-2 border-white object-cover bg-slate-200"
-                  unoptimized
-                />
-            ) : (
-                <div className="w-10 h-10 rounded-full bg-violet-100 border-2 border-white flex items-center justify-center text-violet-600 font-bold text-sm">
-                    {getUserName(user)[0] || "U"}
-                </div>
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center px-1 text-[9px] font-bold text-white bg-red-500 rounded-full border-2 border-white leading-none">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
             )}
-            </Link> 
+          </Link>
+          <Link href="/profile">
+            {user?.profil?.foto_profil ? (
+              <Image
+                src={getImageUrl(user.profil.foto_profil) || ''}
+                alt="Profile"
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full border-2 border-white object-cover bg-slate-200"
+                unoptimized
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-violet-100 border-2 border-white flex items-center justify-center text-violet-600 font-bold text-sm" suppressHydrationWarning>
+                {getUserName(user)[0] || "U"}
+              </div>
+            )}
+          </Link>
         </div>
       </div>
 
@@ -79,7 +79,7 @@ export default function NasabahDashboard() {
                 Poin Kamu
               </p>
 
-              <h2 className="text-3xl font-bold">
+              <h2 className="text-3xl font-bold" suppressHydrationWarning>
                 {user?.profil?.saldo_poin
                   ? Number(user.profil.saldo_poin).toLocaleString('id-ID', { maximumFractionDigits: 0 })
                   : '0'}
@@ -101,7 +101,7 @@ export default function NasabahDashboard() {
                 </div>
                 <span className="text-[11px] font-semibold text-slate-700">Lokasi Unit</span>
               </Link>
-              
+
               <Link href="/nilai-sampah" className="flex flex-col items-center gap-1.5 group">
                 <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
                   <PackageX className="w-6 h-6" />
@@ -116,7 +116,7 @@ export default function NasabahDashboard() {
                 <span className="text-[11px] font-semibold text-slate-700">Jadwal</span>
               </Link>
 
-              <Link href="#" className="flex flex-col items-center gap-1.5 group">
+              <Link href="/edukasi" className="flex flex-col items-center gap-1.5 group">
                 <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
                   <Lightbulb className="w-6 h-6" />
                 </div>
@@ -128,6 +128,13 @@ export default function NasabahDashboard() {
                   <Headset className="w-6 h-6" />
                 </div>
                 <span className="text-[11px] font-semibold text-slate-700">Bantuan</span>
+              </Link>
+
+              <Link href="/kuis" className="flex flex-col items-center gap-1.5 group">
+                <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center transition-transform group-active:scale-95">
+                  <HelpCircle className="w-6 h-6" />
+                </div>
+                <span className="text-[11px] font-semibold text-slate-700">Kuis</span>
               </Link>
             </div>
           </CardContent>
@@ -145,7 +152,7 @@ export default function NasabahDashboard() {
             <span className="text-xs text-violet-600">Lihat semua</span>
           </Link>
         </div>
-        
+
         <Card padding="none" className="rounded-none bg-white overflow-hidden">
           <CardContent>
             <AktivitasList />
@@ -252,7 +259,7 @@ function StatusTracker() {
   // Determine active index and labels
   let activeIndex = 0;
   let labelStep3 = '';
-  let labelStep4 = ''; 
+  let labelStep4 = '';
   let isFailed = false;
   let isSuccess = false;
 
@@ -306,21 +313,21 @@ function StatusTracker() {
         <CardContent className={cn("px-6", isFinalized ? "py-3" : "pt-4 pb-0")}>
           {isFinalized ? (
             <div className="flex flex-col items-center justify-center text-center">
-               <p className="text-xs text-slate-500 italic">Belum ada pengajuan penukaran</p>
+              <p className="text-xs text-slate-500 italic">Belum ada pengajuan penukaran</p>
             </div>
           ) : (
             <>
               <div className="relative">
                 {/* Connecting Line Track */}
                 <div className="absolute top-3 left-3 right-3 h-0.5 bg-slate-100 -z-0"></div>
-                
+
                 {/* Active Line Progress */}
-                <div 
-                    className={cn(
-                      "absolute top-3 left-3 h-0.5 transition-all duration-500 -z-0",
-                      isSuccess ? "bg-emerald-500" : isFailed ? "bg-red-500" : "bg-violet-600"
-                    )}
-                    style={{ width: `calc((100% - 24px) * ${activeIndex / (steps.length - 1)})` }}
+                <div
+                  className={cn(
+                    "absolute top-3 left-3 h-0.5 transition-all duration-500 -z-0",
+                    isSuccess ? "bg-emerald-500" : isFailed ? "bg-red-500" : "bg-violet-600"
+                  )}
+                  style={{ width: `calc((100% - 24px) * ${activeIndex / (steps.length - 1)})` }}
                 ></div>
 
                 <div className="flex justify-between relative z-10">
@@ -367,9 +374,9 @@ function StatusTracker() {
               {/* Spacer for absolute positioned labels */}
               <div className="h-8"></div>
               <div className="flex justify-center border-t border-slate-100 pt-2 pb-3">
-                 <Link href={`/redeem/${latestTransaction.id}`} className="text-xs font-medium text-violet-600 hover:text-violet-700 transition-colors">
-                    Selengkapnya
-                 </Link>
+                <Link href={`/redeem/${latestTransaction.id}`} className="text-xs font-medium text-violet-600 hover:text-violet-700 transition-colors">
+                  Selengkapnya
+                </Link>
               </div>
             </>
           )}

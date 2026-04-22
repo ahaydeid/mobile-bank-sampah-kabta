@@ -13,7 +13,7 @@ const handleUnauthorized = () => {
 
 const baseRequest = async (endpoint: string, options: RequestInit = {}) => {
   const token = Cookies.get('token');
-  
+
   const headers = {
     'Accept': 'application/json',
     'Authorization': token ? `Bearer ${token}` : '',
@@ -48,13 +48,13 @@ const baseRequest = async (endpoint: string, options: RequestInit = {}) => {
 export const api = {
   // Direct fetch for specialized methods
   get: (endpoint: string) => baseRequest(endpoint, { method: 'GET' }),
-  post: (endpoint: string, body: any) => baseRequest(endpoint, { 
-    method: 'POST', 
-    body: JSON.stringify(body) 
+  post: (endpoint: string, body: any) => baseRequest(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(body)
   }),
-  patch: (endpoint: string, body: any) => baseRequest(endpoint, { 
-    method: 'PATCH', 
-    body: JSON.stringify(body) 
+  patch: (endpoint: string, body: any) => baseRequest(endpoint, {
+    method: 'PATCH',
+    body: JSON.stringify(body)
   }),
   delete: (endpoint: string) => baseRequest(endpoint, { method: 'DELETE' }),
 
@@ -68,7 +68,7 @@ export const api = {
       }),
     });
   },
-  
+
   getMe: async () => {
     return api.get('/me');
   },
@@ -110,9 +110,9 @@ export const api = {
   },
 
   updateCartQuantity: async (rewardId: number | string, quantity: number, posId?: number | string) => {
-    return api.patch(`/cart/${rewardId}`, { 
+    return api.patch(`/cart/${rewardId}`, {
       jumlah: quantity,
-      pos_id: posId 
+      pos_id: posId
     });
   },
 
@@ -220,5 +220,14 @@ export const api = {
 
   deleteNotification: async (id: string | number) => {
     return api.post('/notifications/dismiss', { id });
+  },
+
+  // Kuis
+  getKuis: async () => {
+    return api.get('/kuis');
+  },
+
+  submitKuisScore: async (benar: number, salah: number) => {
+    return api.post('/kuis/submit', { benar, salah });
   },
 };
